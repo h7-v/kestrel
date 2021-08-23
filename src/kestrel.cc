@@ -1,0 +1,158 @@
+#include "src/kestrel.h"
+#include "ui_kestrel.h"
+#include "src/dbaccess.h"
+#include <string>
+#include <iomanip>
+// #include <QPixmap>
+// #include <QFile>
+#include "leveldb/db.h"
+
+Kestrel::Kestrel(QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::Kestrel) {
+    ui->setupUi(this);
+
+//    QPixmap logoPix(":/files/images/k-1k1k.png");
+//    int w = ui->logoLabel->width();
+//    int h = ui->logoLabel->height();
+//    ui->logoLabel->setPixmap(logoPix.scaled(w,h,Qt::KeepAspectRatio));
+
+//    QFile file(":/files/logForTextWin.txt");
+}
+
+Kestrel::~Kestrel() {
+    delete ui;
+}
+
+void Kestrel::closeEvent(QCloseEvent *event) {
+    if (mThread != nullptr) {
+        mThread->stop = true;
+        mThread->wait();
+        delete mThread;
+        bChain->stopBlockchainMining();
+    }
+
+    event->accept();
+}
+
+void Kestrel::on_startButton_clicked() {
+    Blockchain *b = new Blockchain("/tmp/kestrelBLOCKDB", "/tmp/kestrelTRANSACTIONSDB");
+    bChain = b;
+
+    if (bChain->getbChainObjectExists()) {
+        ui->textBrowser->append("Blockchain Created");
+
+        ui->textBrowser->append(
+                    "Block Database Status: " +
+                    QString::fromStdString(bChain->getChainBlockDBStatus()));
+
+        ui->textBrowser->append(
+                    "Transaction Database Status: " +
+                    QString::fromStdString(bChain->getChainTransactionDBStatus() + "\n"));
+
+        ui->textBrowser->append("Genesis Block: ");
+        ui->textBrowser->append(QString::fromStdString(
+                                    bChain->getBlockDBContents("00000000")));
+
+        ui->textBrowser->append("LAST BLOCK ON LOCAL SYSTEM: ");
+        ui->textBrowser->append(QString::fromStdString(
+                                    bChain->getBlockDBContents()));
+
+        ui->startButton->setEnabled(false);
+        ui->addTxButton->setEnabled(true);
+        ui->mineButton->setEnabled(true);
+    } else {
+        ui->textBrowser->append("Blockchain Creation Failed...\n");
+    }
+}
+
+void Kestrel::on_addTxButton_clicked() {
+//    bChain->executeTransaction("fromMae", "toHuisi", 50);
+    bChain->executeTransaction("fromLola", "toSydney", 120);
+    bChain->transactionsToBlockBuffer();
+
+    ui->textBrowser->append(
+                QString::fromStdString(bChain->getBlockDataOnly() + "\n"));
+}
+
+void Kestrel::onMineFinished() {
+    ui->textBrowser->append(
+                QString::fromStdString(bChain->getBlockDBContents()));
+}
+
+void Kestrel::on_mineButton_toggled(bool checked) {
+    if (checked) {
+        bChain->runBlockchainMining();
+        mThread = new MinerThread(this);
+        mThread->setProcessChain(bChain);
+
+        ui->mineButton->setText("Stop Mining");
+
+        connect(mThread, &MinerThread::mineFinished,
+                this, &Kestrel::onMineFinished);
+
+        mThread->start();
+    } else if (!checked) {
+        mThread->stop = true;
+        mThread->wait();
+        delete mThread;  // Deletes the object.
+        bChain->stopBlockchainMining();
+        mThread = nullptr;  // Sets the object pointer to null so that the program can close properly with closeEvent().
+
+        ui->mineButton->setText("Start Mining");
+    }
+}
+
+
+void Kestrel::on_debugButton_clicked() {
+    /*
+    std::string value;
+    leveldb::DB *blockdb;
+    leveldb::Options blockdbOptions;
+    blockdbOptions.create_if_missing = false;
+
+    leveldb::Status blockdbStatus = leveldb::DB::Open(
+                blockdbOptions, "/tmp/kestrelBLOCKDB", &blockdb);
+
+    assert(blockdbStatus.ok());
+
+    blockdb->Get(leveldb::ReadOptions(), "12", &value);
+    delete blockdb;
+
+    ui->textBrowser->append(
+                QString::fromStdString(value));
+    */
+
+
+
+
+    std::string latest_key;
+    std::string latest_value;
+
+    leveldb::DB *blockdb;
+    leveldb::Options blockdbOptions;
+    blockdbOptions.create_if_missing = false;
+
+    leveldb::Status blockdbStatus = leveldb::DB::Open(
+                blockdbOptions, "/tmp/kestrelBLOCKDB", &blockdb);
+
+    assert(blockdbStatus.ok());
+    leveldb::Iterator *it = blockdb->NewIterator(leveldb::ReadOptions());
+    /*
+    it->SeekToLast();
+    latest_key = it->key().ToString();
+    latest_value = it->value().ToString();
+    assert(it->status().ok());
+    delete it;
+    delete blockdb;
+
+    ui->textBrowser->append(
+                QString::fromStdString(latest_key + " " + latest_value));
+    */
+    for (it->SeekToFirst(); it->Valid(); it->Next()) {
+      ui->textBrowser->append(
+                  QString::fromStdString(it->key().ToString() + ": "  + it->value().ToString()));
+    }
+    delete it;
+    delete blockdb;
+
+}

@@ -1,0 +1,3 @@
+https://github.com/google/leveldb
+
+Included version: 1.23

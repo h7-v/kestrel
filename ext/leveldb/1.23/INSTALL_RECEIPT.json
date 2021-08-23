@@ -1,0 +1,54 @@
+{
+  "homebrew_version": "3.0.2-34-gbd75cfc",
+  "used_options": [
+
+  ],
+  "unused_options": [
+
+  ],
+  "built_as_bottle": true,
+  "poured_from_bottle": true,
+  "installed_as_dependency": false,
+  "installed_on_request": true,
+  "changed_files": [
+
+  ],
+  "time": 1629210597,
+  "source_modified_time": 1614113677,
+  "stdlib": "libcxx",
+  "compiler": "clang",
+  "aliases": [
+
+  ],
+  "runtime_dependencies": [
+    {
+      "full_name": "gperftools",
+      "version": "2.9.1",
+      "declared_directly": true
+    },
+    {
+      "full_name": "snappy",
+      "version": "1.1.9",
+      "declared_directly": true
+    }
+  ],
+  "source": {
+    "spec": "stable",
+    "versions": {
+      "stable": "1.23",
+      "head": null,
+      "version_scheme": 0
+    },
+    "path": "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/leveldb.rb",
+    "tap_git_head": "1c2323aeecbef23bebdce6d78794a0e8bfea6934",
+    "tap": "homebrew/core"
+  },
+  "arch": "x86_64",
+  "built_on": {
+    "os": "Macintosh",
+    "os_version": "macOS 11.2",
+    "cpu_family": "penryn",
+    "xcode": "12.4",
+    "clt": "12.4.0.0.1.1610135815"
+  }
+}

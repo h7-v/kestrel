@@ -1,7 +1,7 @@
 # Kestrel
 ## _A Basic Blockchain Simulator_
 
-A basic blockchain node written in C++ with QT as an introduction for myself into blockchain technology.
+A basic blockchain node written in C++ with QT as an introduction for myself into blockchain technology. This is my first real programming project - go easy on me!
 All source code is written using [Google's C++ Style Guide](https://google.github.io/styleguide/cppguide.html).
 
 ## Features
@@ -22,11 +22,13 @@ Windows will be supported soon.
 * A precompiled Mac binary can be found on the [releases](https://github.com/maeteu/Kestrel/releases/) page.
 
 If you wish to compile Kestrel yourself, please download QT C++ so that you have the necessary QT libraries on your system.
-Make a directory of your choice for Kestrel and use a command line tool to cd to it. Clone the repository by running the following:
+Make a directory of your choice for Kestrel and use a command line tool to clone the repository:
 ```sh
+mkdir kestrel-node
+cd kestrel-node
 git clone https://github.com/maeteu/kestrel
 ```
-Open the .pro file in QT. From the build dropdown, select "Run qmake", then select either run, debug or build at the bottom left area of the window.
+Open the .pro file in QT. From the build dropdown, select "Run qmake", then select either run, debug, or build at the bottom left area of the window.
 
 ## Additional Notes
 * Kestrel stores block and transaction data at /tmp on Unix systems.

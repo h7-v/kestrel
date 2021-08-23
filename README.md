@@ -2,6 +2,7 @@
 ## _A Basic Blockchain Simulator_
 
 A basic blockchain node written in C++ with QT as an introduction for myself into blockchain technology. This is my first real programming project - go easy on me!
+
 All source code is written using [Google's C++ Style Guide](https://google.github.io/styleguide/cppguide.html).
 
 ## Features

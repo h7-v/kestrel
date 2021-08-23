@@ -40,8 +40,8 @@ LatestInBlockDB BlockDBAccess::getLatestInBlockDBforUI() const {
 
     leveldb::Iterator *it = blockdb->NewIterator(leveldb::ReadOptions());
     it->SeekToLast();
-    latestData.latest_key_ = it->key().ToString();
-    latestData.latest_value_ = it->value().ToString();
+    latestData.latest_key = it->key().ToString();
+    latestData.latest_value = it->value().ToString();
     assert(it->status().ok());
     delete it;
     delete blockdb;
@@ -49,7 +49,7 @@ LatestInBlockDB BlockDBAccess::getLatestInBlockDBforUI() const {
     // Removes the '1' at the very beginning of the value. This '1' represents
     // if the block has been mined or not, but we do not want to see it
     // displayed in the UI.
-    latestData.latest_value_.erase(latestData.latest_value_.begin());
+    latestData.latest_value.erase(latestData.latest_value.begin());
 
     return latestData;
 }
@@ -77,7 +77,7 @@ std::string BlockDBAccess::getBlockDBValueByKeyforUI(const std::string &key) con
 }
 
 std::string BlockDBAccess::getLatestBlockDBHash() const {
-    std::string value_buffer = getLatestInBlockDBforUI().latest_value_;
+    std::string value_buffer = getLatestInBlockDBforUI().latest_value;
     std::string hashString = "HASH: ";
     int startingChar = 6;
     int finishingChar = 0;

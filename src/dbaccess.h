@@ -27,8 +27,8 @@
 // the getLatestInBlockDB() method present in the BlockDBAccess class below.
 struct LatestInBlockDB {
  public:
-  std::string latest_key_;
-  std::string latest_value_;
+  std::string latest_key;
+  std::string latest_value;
 };
 
 // This class handles leveldb database access and modification for Kestrel

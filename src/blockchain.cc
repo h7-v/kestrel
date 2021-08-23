@@ -89,7 +89,7 @@ void Blockchain::createBlock() {
         transactions_vector_.clear();
 
 //        bNew.setIndex(chain_vector_.back().getIndex() + 1);
-        bNew.setIndex(std::stoi(block_db_access_->getLatestInBlockDBforUI().latest_key_) + 1);
+        bNew.setIndex(std::stoi(block_db_access_->getLatestInBlockDBforUI().latest_key) + 1);
         bNew.setPrevHash(block_db_access_->getLatestBlockDBHash());
 
         bNew.mineBlock(difficulty_);
@@ -120,7 +120,7 @@ bool Blockchain::bufferBlockContainsData() const {
 }
 
 std::string Blockchain::getBlockDBContents() const {
-    return block_db_access_->getLatestInBlockDBforUI().latest_value_;
+    return block_db_access_->getLatestInBlockDBforUI().latest_value;
 }
 
 std::string Blockchain::getBlockDBContents(const std::string &key) const {

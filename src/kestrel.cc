@@ -125,8 +125,8 @@ void Kestrel::on_debugButton_clicked() {
 
 
 
-    std::string latest_key_;
-    std::string latest_value_;
+    std::string latest_key;
+    std::string latest_value;
 
     leveldb::DB *blockdb;
     leveldb::Options blockdbOptions;
@@ -139,14 +139,14 @@ void Kestrel::on_debugButton_clicked() {
     leveldb::Iterator *it = blockdb->NewIterator(leveldb::ReadOptions());
     /*
     it->SeekToLast();
-    latest_key_ = it->key().ToString();
-    latest_value_ = it->value().ToString();
+    latest_key = it->key().ToString();
+    latest_value = it->value().ToString();
     assert(it->status().ok());
     delete it;
     delete blockdb;
 
     ui->textBrowser->append(
-                QString::fromStdString(latest_key_ + " " +latest_value_e));
+                QString::fromStdString(latest_key + " " +llatest_value));
     */
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
       ui->textBrowser->append(

@@ -26,6 +26,7 @@ Make a directory of your choice for Kestrel and use a command line tool to cd to
 ```sh
 git clone https://github.com/maeteu/kestrel
 ```
+Open the .pro file in QT. From the build dropdown, select "Run qmake", then select either run, debug or build at the bottom left area of the window.
 
 ## Additional Notes
 * Kestrel stores block and transaction data at /tmp on Unix systems.

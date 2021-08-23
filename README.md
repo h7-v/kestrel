@@ -5,11 +5,11 @@ A basic blockchain node written in C++ with QT as an introduction for myself int
 All source code is written using [Google's C++ Style Guide](https://google.github.io/styleguide/cppguide.html).
 
 ## Features
-* Mining blocks filled with transaction data using Proof of Work
-* Using Google's leveldb database library to store and access blocks on disk (Block data itself may be stored elsewhere eventually)
-* Maintaining a local wallet balance based on previous transactions
-* Using a private key to send KES coins to other Kestrel wallets (Upcoming)
-* Handling transaction data with Merkle Trees (Upcoming)
+* Mines blocks filled with transaction data using Proof of Work
+* Uses [leveldb](https://github.com/google/leveldb) to store and access blocks on disk (Block data itself may be stored elsewhere eventually)
+* Maintains a local wallet balance based on previous transactions
+* Uses private keys to send KES coins to other Kestrel wallets (Upcoming)
+* Handles transaction data with Merkle Trees (Upcoming)
 * Networking to interact with other nodes (Upcoming)
 * Consensus with other nodes on the network to establish which blocks should be added to the chain (Upcoming)
 * Cross Platform (Upcoming)

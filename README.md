@@ -19,7 +19,7 @@ All source code is written using [Google's C++ Style Guide](https://google.githu
 Windows will be supported soon.
 
 ### Unix Systems
-A precompiled binary on the [releases](https://github.com/maeteu/Kestrel/releases/) page.
+A precompiled binary can be found on the [releases](https://github.com/maeteu/Kestrel/releases/) page.
 
 If you wish to compile Kestrel yourself, please download QT C++ so that you have the necessary QT libraries on your system.
 Make a directory of your choice for Kestrel and use a command line tool to cd to it. Clone the repository by running the following:

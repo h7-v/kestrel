@@ -7,34 +7,34 @@
 #include "src/kestrel.h"
 #include "ui_kestrel.h"
 
-inline std::string Block::_calculateHash() const {
+inline std::string Block::calculateHash() const {
     std::stringstream ss;
-    ss << _nIndex << _nNonce << _sData << _sPrevHash;
+    ss << index_ << nonce_ << data_<< prev_hash_;
 
     return sha256(ss.str());
 }
 
-inline std::string Block::_calculateGenesis() const {
+inline std::string Block::calculateGenesis() const {
     std::stringstream ss;
-    ss << _nIndex << _sData << _nNonce << _tTime;
+    ss << index_ << data_ << nonce_ << time_;
 
     return sha256(ss.str());
 }
 
 Block::Block(uint32_t nIndexIn, const std::string &sDataIn)
-    : _nIndex(padIndexWithZeros(nIndexIn)), _sData(sDataIn) {
-    _nNonce = -1;
-    _sPrevHash = "";
-    _sHash = "";
-    _tTime = time(nullptr);  // overwritten when tempblock is copied to new block
+    : index_(padIndexWithZeros(nIndexIn)), data_(sDataIn) {
+    nonce_ = -1;
+    prev_hash_ = "";
+    hash_ = "";
+    time_ = time(nullptr);  // overwritten when tempblock is copied to new block
 }
 
 std::string Block::getIndex() const {
-    return _nIndex;
+    return index_;
 }
 
 void Block::setIndex(uint32_t index) {
-    _nIndex = padIndexWithZeros(index);
+    index_ = padIndexWithZeros(index);
 }
 
 std::string Block::padIndexWithZeros(uint32_t index) const {
@@ -44,15 +44,15 @@ std::string Block::padIndexWithZeros(uint32_t index) const {
 }
 
 void Block::setPrevHash(std::string lastBlockHash) {
-    _sPrevHash = lastBlockHash;
+    prev_hash_ = lastBlockHash;
 }
 
 std::string Block::getHash() {
-    return _sHash;
+    return hash_;
 }
 
 void Block::setTime(time_t time) {
-    _tTime = time;
+    time_ = time;
 }
 
 bool Block::getMinedStatus() const {
@@ -73,16 +73,16 @@ void Block::prepareDifficultyComparison(uint32_t nDifficulty) {
 
 void Block::satisfyProofOfWork(uint32_t nDifficulty) {
     do {
-        _nNonce++;
-        _sHash = _calculateHash();
-    } while (_sHash.substr(0, nDifficulty) != difficultyComparison);
+        nonce_++;
+        hash_ = calculateHash();
+    } while (hash_.substr(0, nDifficulty) != difficultyComparison);
 }
 
 void Block::mineBlock(uint32_t nDifficulty) {
     prepareDifficultyComparison(nDifficulty);
     satisfyProofOfWork(nDifficulty);
 
-    if (_sHash.substr(0, nDifficulty) == difficultyComparison) {
+    if (hash_.substr(0, nDifficulty) == difficultyComparison) {
         isMined = '1';
     }
 }
@@ -98,15 +98,15 @@ void Block::mineGenesis(u_int32_t nDifficulty) {
     delete[] cstr;
 
     do {
-        _nNonce++;
-        _sHash = _calculateGenesis();
-    } while (_sHash.substr(0, nDifficulty) != str);
+        nonce_++;
+        hash_ = calculateGenesis();
+    } while (hash_.substr(0, nDifficulty) != str);
 
-    if (_sHash.substr(0, nDifficulty) == str) {
+    if (hash_.substr(0, nDifficulty) == str) {
         isMined = '1';
     }
 
-    std::cout << "Block mined: " << _sHash << "\n";
+    std::cout << "Block mined: " << hash_ << "\n";
 }
 
 void Block::fillBlockData(const std::vector<Transaction> &vDataIn) {
@@ -114,32 +114,32 @@ void Block::fillBlockData(const std::vector<Transaction> &vDataIn) {
     for (uint i = 0; i < vDataIn.size(); i++) {
         ss << vDataIn[i].getTransactionData().str();
     }
-    _sData = ss.str();
+    data_ = ss.str();
 }
 
 void Block::emptyBlockContents() {
-    _nIndex = 1;
-    _nNonce = 0;
-    _sData = "";
-    _sHash = "";
-    _tTime = 0;
+    index_ = 1;
+    nonce_ = 0;
+    data_ = "";
+    hash_ = "";
+    time_ = 0;
 }
 
 std::string Block::getBlockContents() const {
     char buf[25];
-    ctime_r(&_tTime, buf);  // ctime_r is more multithreading safe. I think?
+    ctime_r(&time_, buf);  // ctime_r is more multithreading safe. I think?
     std::stringstream ss;
     ss << isMined
-       << "Index: " << _nIndex << "\n"
-       << "Nonce: " <<_nNonce << "\n"
-       << "Data Contents: " << _sData << "\n"
-       << "Previous Block's Hash: " << _sPrevHash << "\n"
-       << "HASH: " << _sHash << "\n"
+       << "Index: " << index_ << "\n"
+       << "Nonce: " <<nonce_ << "\n"
+       << "Data Contents: " << data_ << "\n"
+       << "Previous Block's Hash: " << prev_hash_ << "\n"
+       << "HASH: " << hash_ << "\n"
        << "Time: " << buf;
 
     return ss.str();
 }
 
 std::string Block::getBlockData() const {
-    return _sData;
+    return data_;
 }

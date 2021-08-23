@@ -2,7 +2,7 @@
 #include <string>
 
 Wallet::Wallet(const std::string &address, const std::string &key)
-    : _sWalletAddress(address), _sPrivateKey(key) {
+    : wallet_address_(address), private_key_(key) {
     setBalance();
 }
 
@@ -11,5 +11,5 @@ void Wallet::setBalance() {
 }
 
 float Wallet::getBalance() const {
-    return _fBalance;
+    return balance_;
 }

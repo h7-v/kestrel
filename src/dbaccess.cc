@@ -1,20 +1,20 @@
 #include "src/dbaccess.h"
 
 BlockDBAccess::BlockDBAccess(const std::string &dbpath)
-    : block_database_file_path(dbpath) {
+    : block_database_file_path_(dbpath) {
     leveldb::DB *blockdb;
     leveldb::Options blockdbOptions;
     blockdbOptions.create_if_missing = true;
 
     leveldb::Status blockdbStatus = leveldb::DB::Open(
-                blockdbOptions, block_database_file_path, &blockdb);
+                blockdbOptions, block_database_file_path_, &blockdb);
 
     assert(blockdbStatus.ok());
 
     if (!blockdbStatus.ok()) {
         std::cerr << blockdbStatus.ToString() << std::endl;
     } else if (blockdbStatus.ok()) {
-        blockdb_status = (blockdbStatus.ToString());
+        blockdb_status_ = (blockdbStatus.ToString());
     }
 
     delete blockdb;
@@ -23,7 +23,7 @@ BlockDBAccess::BlockDBAccess(const std::string &dbpath)
 BlockDBAccess::~BlockDBAccess() {}
 
 std::string BlockDBAccess::getBlockDBStatus() const {
-    return blockdb_status;
+    return blockdb_status_;
 }
 
 LatestInBlockDB BlockDBAccess::getLatestInBlockDBforUI() const {
@@ -34,14 +34,14 @@ LatestInBlockDB BlockDBAccess::getLatestInBlockDBforUI() const {
     blockdbOptions.create_if_missing = false;
 
     leveldb::Status blockdbStatus = leveldb::DB::Open(
-                blockdbOptions, block_database_file_path, &blockdb);
+                blockdbOptions, block_database_file_path_, &blockdb);
 
     assert(blockdbStatus.ok());
 
     leveldb::Iterator *it = blockdb->NewIterator(leveldb::ReadOptions());
     it->SeekToLast();
-    latestData.latest_key = it->key().ToString();
-    latestData.latest_value = it->value().ToString();
+    latestData.latest_key_ = it->key().ToString();
+    latestData.latest_value_ = it->value().ToString();
     assert(it->status().ok());
     delete it;
     delete blockdb;
@@ -49,7 +49,7 @@ LatestInBlockDB BlockDBAccess::getLatestInBlockDBforUI() const {
     // Removes the '1' at the very beginning of the value. This '1' represents
     // if the block has been mined or not, but we do not want to see it
     // displayed in the UI.
-    latestData.latest_value.erase(latestData.latest_value.begin());
+    latestData.latest_value_.erase(latestData.latest_value_.begin());
 
     return latestData;
 }
@@ -61,7 +61,7 @@ std::string BlockDBAccess::getBlockDBValueByKeyforUI(const std::string &key) con
     blockdbOptions.create_if_missing = false;
 
     leveldb::Status blockdbStatus = leveldb::DB::Open(
-                blockdbOptions, block_database_file_path, &blockdb);
+                blockdbOptions, block_database_file_path_, &blockdb);
 
     assert(blockdbStatus.ok());
 
@@ -77,7 +77,7 @@ std::string BlockDBAccess::getBlockDBValueByKeyforUI(const std::string &key) con
 }
 
 std::string BlockDBAccess::getLatestBlockDBHash() const {
-    std::string value_buffer = getLatestInBlockDBforUI().latest_value;
+    std::string value_buffer = getLatestInBlockDBforUI().latest_value_;
     std::string hashString = "HASH: ";
     int startingChar = 6;
     int finishingChar = 0;
@@ -103,16 +103,16 @@ void BlockDBAccess::onPreviousBlockInMinedState() {
 }
 
 void BlockDBAccess::checkIfLatestBlockDBIsMined() {
-    cThread = new CheckerThread();
-    cThread->setFilePath(block_database_file_path);
+    cthread_ = new CheckerThread();
+    cthread_->setFilePath(block_database_file_path_);
 
-    connect(cThread, &CheckerThread::previousBlockInMinedState,
+    connect(cthread_, &CheckerThread::previousBlockInMinedState,
             this, &BlockDBAccess::onPreviousBlockInMinedState);
 
 
-    cThread->start();
-    cThread->wait();
-    delete cThread;
+    cthread_->start();
+    cthread_->wait();
+    delete cthread_;
 }
 
 bool BlockDBAccess::getPreviousDBBlockIsMined() const {
@@ -125,7 +125,7 @@ void BlockDBAccess::putInBlockDB(const Block &b) const {
     blockdbOptions.create_if_missing = false;
 
     leveldb::Status blockdbStatus = leveldb::DB::Open(
-                blockdbOptions, block_database_file_path, &blockdb);
+                blockdbOptions, block_database_file_path_, &blockdb);
 
     assert(blockdbStatus.ok());
 
@@ -146,7 +146,7 @@ void BlockDBAccess::deleteFromBlockDB(const std::string &key) const {
     blockdbOptions.create_if_missing = false;
 
     leveldb::Status blockdbStatus = leveldb::DB::Open(
-                blockdbOptions, block_database_file_path, &blockdb);
+                blockdbOptions, block_database_file_path_, &blockdb);
 
     assert(blockdbStatus.ok());
 
@@ -163,13 +163,13 @@ void BlockDBAccess::deleteFromBlockDB(const std::string &key) const {
 // ----------------------------------------------------------------------------
 
 TransactionDBAccess::TransactionDBAccess(const std::string &dbpath)
-    : transaction_database_file_path(dbpath) {
+    : transaction_database_file_path_(dbpath) {
     leveldb::DB *transactiondb;
     leveldb::Options transactiondbOptions;
     transactiondbOptions.create_if_missing = true;
 
     leveldb::Status transactiondbStatus = leveldb::DB::Open(
-                transactiondbOptions, transaction_database_file_path,
+                transactiondbOptions, transaction_database_file_path_,
                 &transactiondb);
 
     assert(transactiondbStatus.ok());
@@ -177,7 +177,7 @@ TransactionDBAccess::TransactionDBAccess(const std::string &dbpath)
     if (!transactiondbStatus.ok()) {
         std::cerr << transactiondbStatus.ToString() << std::endl;
     } else if (transactiondbStatus.ok()) {
-        transactiondb_status = (transactiondbStatus.ToString());
+        transactiondb_status_ = (transactiondbStatus.ToString());
     }
 
     delete transactiondb;
@@ -186,5 +186,5 @@ TransactionDBAccess::TransactionDBAccess(const std::string &dbpath)
 TransactionDBAccess::~TransactionDBAccess() {}
 
 std::string TransactionDBAccess::getTransactionDBStatus() const {
-    return transactiondb_status;
+    return transactiondb_status_;
 }

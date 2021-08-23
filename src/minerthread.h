@@ -12,7 +12,7 @@ class MinerThread : public QThread {
 
  private:
   // Used to access the Blockchain object directly.
-  Blockchain *processChain{nullptr};
+  Blockchain *process_chain_{nullptr};
 
  public:
   // Constructor empty.
@@ -21,17 +21,17 @@ class MinerThread : public QThread {
   // Destructor empty.
   ~MinerThread();
 
-  // Bridges the processChain pointer and the Blockchain object.
+  // Bridges the process_chain_ pointer and the Blockchain object.
   void setProcessChain(Blockchain *b);
 
   // Override from QThread. Performs the task stated at the top of this class.
   void run() override;
 
-  bool exists = true;  // TODO(matt): Do I even need this?
+  bool exists_ = true;  // TODO(matt): Do I even need this?
 
   // Used by run() to check when to stop the process. This variable is set by
   // the Mine button in the UI when it is toggled off.
-  bool stop;
+  bool stop_;
 
  signals:
   // Signals to the SLOT onMineFinished() in the UI to display the latest block

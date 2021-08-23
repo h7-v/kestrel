@@ -24,11 +24,11 @@ Kestrel::~Kestrel() {
 }
 
 void Kestrel::closeEvent(QCloseEvent *event) {
-    if (mThread != nullptr) {
-        mThread->stop = true;
-        mThread->wait();
-        delete mThread;
-        bChain->stopBlockchainMining();
+    if (mthread_ != nullptr) {
+        mthread_->stop_ = true;
+        mthread_->wait();
+        delete mthread_;
+        bchain_->stopBlockchainMining();
     }
 
     event->accept();
@@ -36,26 +36,26 @@ void Kestrel::closeEvent(QCloseEvent *event) {
 
 void Kestrel::on_startButton_clicked() {
     Blockchain *b = new Blockchain("/tmp/kestrelBLOCKDB", "/tmp/kestrelTRANSACTIONSDB");
-    bChain = b;
+    bchain_ = b;
 
-    if (bChain->getbChainObjectExists()) {
+    if (bchain_->getBChainObjectExists()) {
         ui->textBrowser->append("Blockchain Created");
 
         ui->textBrowser->append(
                     "Block Database Status: " +
-                    QString::fromStdString(bChain->getChainBlockDBStatus()));
+                    QString::fromStdString(bchain_->getChainBlockDBStatus()));
 
         ui->textBrowser->append(
                     "Transaction Database Status: " +
-                    QString::fromStdString(bChain->getChainTransactionDBStatus() + "\n"));
+                    QString::fromStdString(bchain_->getChainTransactionDBStatus() + "\n"));
 
         ui->textBrowser->append("Genesis Block: ");
         ui->textBrowser->append(QString::fromStdString(
-                                    bChain->getBlockDBContents("00000000")));
+                                    bchain_->getBlockDBContents("00000000")));
 
         ui->textBrowser->append("LAST BLOCK ON LOCAL SYSTEM: ");
         ui->textBrowser->append(QString::fromStdString(
-                                    bChain->getBlockDBContents()));
+                                    bchain_->getBlockDBContents()));
 
         ui->startButton->setEnabled(false);
         ui->addTxButton->setEnabled(true);
@@ -66,37 +66,37 @@ void Kestrel::on_startButton_clicked() {
 }
 
 void Kestrel::on_addTxButton_clicked() {
-//    bChain->executeTransaction("fromMae", "toHuisi", 50);
-    bChain->executeTransaction("fromLola", "toSydney", 120);
-    bChain->transactionsToBlockBuffer();
+//    bchain_->executeTransaction("fromMae", "toHuisi", 50);
+    bchain_->executeTransaction("fromLola", "toSydney", 120);
+    bchain_->transactionsToBlockBuffer();
 
     ui->textBrowser->append(
-                QString::fromStdString(bChain->getBlockDataOnly() + "\n"));
+                QString::fromStdString(bchain_->getBlockDataOnly() + "\n"));
 }
 
 void Kestrel::onMineFinished() {
     ui->textBrowser->append(
-                QString::fromStdString(bChain->getBlockDBContents()));
+                QString::fromStdString(bchain_->getBlockDBContents()));
 }
 
 void Kestrel::on_mineButton_toggled(bool checked) {
     if (checked) {
-        bChain->runBlockchainMining();
-        mThread = new MinerThread(this);
-        mThread->setProcessChain(bChain);
+        bchain_->runBlockchainMining();
+        mthread_ = new MinerThread(this);
+        mthread_->setProcessChain(bchain_);
 
         ui->mineButton->setText("Stop Mining");
 
-        connect(mThread, &MinerThread::mineFinished,
+        connect(mthread_, &MinerThread::mineFinished,
                 this, &Kestrel::onMineFinished);
 
-        mThread->start();
+        mthread_->start();
     } else if (!checked) {
-        mThread->stop = true;
-        mThread->wait();
-        delete mThread;  // Deletes the object.
-        bChain->stopBlockchainMining();
-        mThread = nullptr;  // Sets the object pointer to null so that the program can close properly with closeEvent().
+        mthread_->stop_ = true;
+        mthread_->wait();
+        delete mthread_;  // Deletes the object.
+        bchain_->stopBlockchainMining();
+        mthread_ = nullptr;  // Sets the object pointer to null so that the program can close properly with closeEvent().
 
         ui->mineButton->setText("Start Mining");
     }
@@ -125,8 +125,8 @@ void Kestrel::on_debugButton_clicked() {
 
 
 
-    std::string latest_key;
-    std::string latest_value;
+    std::string latest_key_;
+    std::string latest_value_;
 
     leveldb::DB *blockdb;
     leveldb::Options blockdbOptions;
@@ -139,14 +139,14 @@ void Kestrel::on_debugButton_clicked() {
     leveldb::Iterator *it = blockdb->NewIterator(leveldb::ReadOptions());
     /*
     it->SeekToLast();
-    latest_key = it->key().ToString();
-    latest_value = it->value().ToString();
+    latest_key_ = it->key().ToString();
+    latest_value_ = it->value().ToString();
     assert(it->status().ok());
     delete it;
     delete blockdb;
 
     ui->textBrowser->append(
-                QString::fromStdString(latest_key + " " + latest_value));
+                QString::fromStdString(latest_key_ + " " +latest_value_e));
     */
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
       ui->textBrowser->append(

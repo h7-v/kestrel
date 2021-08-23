@@ -27,8 +27,8 @@
 // the getLatestInBlockDB() method present in the BlockDBAccess class below.
 struct LatestInBlockDB {
  public:
-  std::string latest_key;
-  std::string latest_value;
+  std::string latest_key_;
+  std::string latest_value_;
 };
 
 // This class handles leveldb database access and modification for Kestrel
@@ -38,17 +38,17 @@ class BlockDBAccess : public QObject {
  private:
   // Used in place of filling in the database path on leveldb::DB::Open
   // each time.
-  std::string block_database_file_path;
+  std::string block_database_file_path_;
 
   // Translation units can get access to leveldb::Status variables with this.
   // Necessary if we wish to print the status to the UI.
-  std::string blockdb_status;
+  std::string blockdb_status_;
 
   bool previousDBBlockIsMined = false;
 
  public:
   // Takes a filepath for where we wish to create the database. This path
-  // defines block_database_file_path. The database is created and then error
+  // defines block_database_file_path_. The database is created and then error
   // checked. All methods in this class will not create the database when
   // called - only the constructor.
   explicit BlockDBAccess(const std::string &dbpath);
@@ -76,14 +76,16 @@ class BlockDBAccess : public QObject {
   // 64 character SHA-256 hash that follows.
   std::string getLatestBlockDBHash() const;
 
-  CheckerThread *cThread{nullptr};
+  CheckerThread *cthread_{nullptr};
 
  public slots:
-  // Fill this in
+  // Slot matching the SIGNAL previousBlockInMinedState() from CheckerThread.
+  // Sets previousDBBlockIsMined to true.
   void onPreviousBlockInMinedState();
 
  public:
-
+  // Checks if the latest block by index is marked with a 1 at the beginning of
+  // it's value.
   void checkIfLatestBlockDBIsMined();
 
   bool getPreviousDBBlockIsMined() const;
@@ -106,11 +108,11 @@ class TransactionDBAccess {
  private:
   // Used in place of filling in the database path on leveldb::DB::Open
   // each time.
-  std::string transaction_database_file_path;
+  std::string transaction_database_file_path_;
 
   // Translation units can get access to leveldb::Status variables with this.
   // Necessary if we wish to print the status to the UI.
-  std::string transactiondb_status;
+  std::string transactiondb_status_;
 
  public:
   // Works identically to the explicit BlockDBAccess constructor above.

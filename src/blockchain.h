@@ -15,61 +15,61 @@
 class Blockchain {
   // Strings for storing the chosen database file paths in case we need to use
   // them at all in the blockchain translation unit.
-  std::string blockdb_file_path;
-  std::string transactiondb_file_path;
+  std::string blockdb_file_path_;
+  std::string transactiondb_file_path_;
 
   // Pointers copied to by the Blockchain constructor when we create our
   // database access objects. We can use these across scopes in the Blockchain
   // translation unit for access and modification to the local Kestrel
   // databases.
-  BlockDBAccess *block_db_access{nullptr};
-  TransactionDBAccess *transaction_db_access{nullptr};
+  BlockDBAccess *block_db_access_{nullptr};
+  TransactionDBAccess *transaction_db_access_{nullptr};
 
   // Used with getChainBlockDBStatus() and getChainTransactionDBStatus() so
   // that we can return the status to the UI.
-  std::string chainBlockDBStatus;
-  std::string chainTransactionDBStatus;
+  std::string chain_block_db_status_;
+  std::string chain_transaction_db_status_;
 
   // Number of zeros necessary at the start of Block hashes to satisfy Proof of
   // Work on Kestrel.
-  uint32_t _nDifficulty;
+  uint32_t difficulty_;
 
   // Temporary block to be filled with data while Kestrel is mining the
   // previous block. This temporary block is then copied to a new block that
   // will be mined and put forward for consensus. The temporary block is
   // cleared immediately after this copy so that it can begin being filled
   // again.
-  TempBlock _bBufferBlock;
+  TempBlock buffer_block_;
 
   // OLD VECTOR USED FOR STORING BLOCKS. REMOVE WHEN 100% SURE THAT BLOCKDB WORKS!
-  std::vector<Block> _vChain;  // TODO(matt): Blockdb is working. This should be cleared when 100% sure everything works.
+  std::vector<Block> chain_vector_;  // TODO(matt): Blockdb is working. This should be cleared when 100% sure everything works.
 
   // REMOVE WHEN 100% SURE THAT TRANSACTIONDB WORKS!
-  std::vector<Transaction> _vTransactions;  // TODO(matt): Migrate from this vector to the leveldb transaction db.
+  std::vector<Transaction> transactions_vector_;  // TODO(matt): Migrate from this vector to the leveldb transaction db.
 
   // Vector used for storing basic wallet data locally. Wallet data is updated
   // before any transactions take place, and private keys are NEVER stored.
   // TODO(matt): Make sure that private keys exist in the program for the LEAST
   // AMOUNT OF TIME POSSIBLE. STACK STORAGE FOR AS FEW CPU CYCLES POSSIBLE.
-  std::vector<Wallet> _vWallets;
+  std::vector<Wallet> wallets_vector_;
 
-  // Returns the latest Block object in _vChain.
+  // Returns the latest Block object in chain_vector_.
   // TODO(matt): REMOVE WHEN 100% SURE THAT BLOCKDB WORKS!
-  Block _getLastBlock() const;
+  Block getLastBlock() const;
 
-  // Used with the getbChainObjectExists() method to let the UI know that
+  // Used with the getBChainObjectExists() method to let the UI know that
   // the Blockchain object has been created. This happens at the end of the
   // Blockchain constructor, so we can assume that if no assert() methods
   // force a crash in the creation/opening of leveldb databases, the Blockchain
   // object and associated databases have been opened and are functioning as
   // normal.
-  bool bChainObjectExists = false;
+  bool bchain_object_exists_ = false;
 
   // Keeps track of whether or not the Blockchain is currently mining locally.
   // Used by the MinerThread object (multithreading to prevent
   // UI lockup) to determine whether the mining process should be started or
   // stopped.
-  bool isMining = false;
+  bool is_mining_ = false;
 
  public:
   // Sets database file paths.
@@ -78,7 +78,7 @@ class Blockchain {
   // Creates the Genesis Block at key 0 to be compared with the other earliest
   // block in the chain. The other earliest block's last hash should match the
   // Genesis hash.
-  // Sets bChainObjectExists to true.
+  // Sets bchain_object_exists_ to true.
   // TODO(matt): If the earliest block doesn't match the Genesis block, the
   // local chain is corrupt so the databases should be erased and downloaded
   // from the start.
@@ -88,7 +88,7 @@ class Blockchain {
   // Clears the memory for the database access objects allocated on the heap.
   ~Blockchain();
 
-  bool getbChainObjectExists() const;
+  bool getBChainObjectExists() const;
 
   // Sets the relevent Blockchain object database status member variable by
   // using the status getter from the dbaccess API.
@@ -99,13 +99,13 @@ class Blockchain {
 
   std::string getChainTransactionDBStatus() const;
 
-  // Sets isMining to true.
+  // Sets is_mining_ to true.
   void runBlockchainMining();
 
-  // Sets isMining to false.
+  // Sets is_mining_ to false.
   void stopBlockchainMining();
 
-  // Used by MinerThread class. See isMining member variable above.
+  // Used by MinerThread class. See is_mining_ member variable above.
   bool getIsMining() const;
 
  public:

@@ -27,7 +27,7 @@ class Kestrel : public QMainWindow {
   void closeEvent(QCloseEvent *event);
 
   // Used to keep access to the MinerThread when toggling the Mine button.
-  MinerThread *mThread{nullptr};
+  MinerThread *mthread_{nullptr};
 
  private slots:
   void on_startButton_clicked();
@@ -51,6 +51,6 @@ class Kestrel : public QMainWindow {
   // Pointer is given an address when the blockchain object is created on
   // start. Using this pointer allows for access to the blockchain object in
   // all scopes in the translation unit.
-  Blockchain *bChain{nullptr};
+  Blockchain *bchain_{nullptr};
 };
 #endif  // KESTREL_H

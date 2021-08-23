@@ -7,7 +7,7 @@ CheckerThread::CheckerThread(QObject *parent)
 CheckerThread::~CheckerThread() {}
 
 void CheckerThread::setFilePath(std::string dbFilePath) {
-    cthread_block_db_file_path = dbFilePath;
+    cthread_block_db_file_path_ = dbFilePath;
 }
 
 void CheckerThread::run() {
@@ -16,7 +16,7 @@ void CheckerThread::run() {
     blockdbOptions.create_if_missing = false;
 
     leveldb::Status blockdbStatus = leveldb::DB::Open(
-                blockdbOptions, cthread_block_db_file_path, &blockdb);
+                blockdbOptions, cthread_block_db_file_path_, &blockdb);
 
     assert(blockdbStatus.ok());
 

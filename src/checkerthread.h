@@ -14,7 +14,7 @@ class CheckerThread : public QThread {
 
  private:
   // Stores the file path set by BlockDBAccess for opening the database.
-  std::string cthread_block_db_file_path;
+  std::string cthread_block_db_file_path_;
 
  public:
   // Construtor empty.
@@ -23,7 +23,7 @@ class CheckerThread : public QThread {
   // Destructor empty.
   ~CheckerThread();
 
-  // BlockDBAccess sets cthread_block_db_file_path before starting run().
+  // BlockDBAccess sets cthread_block_db_file_path_ before starting run().
   void setFilePath(std::string dbFilePath);
 
   // Override from QThread. Performs the task stated at the top of this class.

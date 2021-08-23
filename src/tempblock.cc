@@ -3,12 +3,12 @@
 
 TempBlock::TempBlock(uint32_t index, std::string data)
     : Block(index, data) {
-    _nNonce = 0;
-    _sHash = "";
+    nonce_ = 0;
+    hash_ = "";
 }
 
 bool TempBlock::tempBlockContainsData() const {
-    if (_sData == "") {
+    if (data_ == "") {
         return false;
     } else {
         return true;

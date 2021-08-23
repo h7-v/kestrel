@@ -3,15 +3,15 @@
 #include <sstream>
 
 Transaction::Transaction(std::string fromHash, std::string toHash, float amount)
-    : _sFromWallet(fromHash), _sToWallet(toHash), _fAmountTransferred(amount) {
-    _tTransactionTime = time(nullptr);
+    : from_wallet_(fromHash), to_wallet_(toHash), amount_transferred_(amount) {
+    time_of_transaction_ = time(nullptr);
 }
 
 std::stringstream Transaction::getTransactionData() const {
     std::stringstream ss;
-    ss << "--" << _sFromWallet;
-    ss << ",," << _sToWallet;
-    ss << ",," << _fAmountTransferred;
-    ss << ",," << _tTransactionTime << "__";
+    ss << "--" << from_wallet_;
+    ss << ",," << to_wallet_;
+    ss << ",," << amount_transferred_;
+    ss << ",," << time_of_transaction_ << "__";
     return ss;
 }

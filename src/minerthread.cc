@@ -8,15 +8,15 @@ MinerThread::MinerThread(QObject *parent)
 MinerThread::~MinerThread() {}
 
 void MinerThread::setProcessChain(Blockchain *b) {
-    processChain = b;
+    process_chain_ = b;
 }
 
 void MinerThread::run() {
-    while (processChain->getIsMining()) {
-        if (this->stop) break;
+    while (process_chain_->getIsMining()) {
+        if (this->stop_) break;
         usleep(100000);  // TODO(matt): wait 0.1s for debugging. COMMENT OUT FOR RELEASE.
-        if (processChain->bufferBlockContainsData()) {
-            processChain->createBlock();
+        if (process_chain_->bufferBlockContainsData()) {
+            process_chain_->createBlock();
 
             emit mineFinished();
         }

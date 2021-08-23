@@ -6,10 +6,10 @@
 #include <iostream>
 
 class Transaction {
-  std::string _sFromWallet;
-  std::string _sToWallet;
-  float _fAmountTransferred;
-  time_t _tTransactionTime;
+  std::string from_wallet_;
+  std::string to_wallet_;
+  float amount_transferred_;
+  time_t time_of_transaction_;
 
  public:
   Transaction(std::string fromHash, std::string toHash, float amount);

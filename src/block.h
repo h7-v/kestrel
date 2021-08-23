@@ -9,30 +9,30 @@
 class Block {
  protected:
   // Block data used in mining.
-  std::string _nIndex;  // Was uint32_t before padding was added.
-  int64_t _nNonce;
-  std::string _sData;
-  std::string _sPrevHash;
+  std::string index_;  // Was uint32_t before padding was added.
+  int64_t nonce_;
+  std::string data_;
+  std::string prev_hash_;
 
   // Block hash variable set after mining is completed.
-  std::string _sHash;
+  std::string hash_;
 
   // Used to mark the block with a timestamp on completion of mining.
   // The Genesis block uses this variable in the mining process as well as
   // using it as the associated timestamp. This is contrary to every other
   // block on the chain.
-  time_t _tTime;
+  time_t time_;
 
  private:
   // Using a string stream, converts the stored data for the block to a string
   // and then returns the SHA256 hash of that data. Used by
   // satisfyProofOfWork().
-  std::string _calculateHash() const;
+  std::string calculateHash() const;
 
-  // Does the same as _calculateHash(), but adds the set time for Genesis, and
+  // Does the same as calculateHash(), but adds the set time for Genesis, and
   // ignores the previous hash as the Genesis block is the first block in the
   // chain. Used by mineGenesis().
-  std::string _calculateGenesis() const;
+  std::string calculateGenesis() const;
 
   // Used as an internal means to keep track of whether or not a block has been
   // mined.
@@ -51,7 +51,7 @@ class Block {
   std::string getIndex() const;
 
   // Takes a number, pads it with zeros using padIndexWithZeros(), then sets
-  // _nIndex.
+  // index_.
   void setIndex(uint32_t index);
 
   // Pads the start of the input integer with enough zeros to make the number
@@ -89,7 +89,7 @@ class Block {
   void mineGenesis(u_int32_t nDifficulty);
 
   // Takes a vector of transactions, converts them into processable
-  // string packets, and then streams the packets to _sData.
+  // string packets, and then streams the packets to data_.
   void fillBlockData(const std::vector<Transaction> &sDataIn);
 
   // Resets the block data to 0 and empty values.
@@ -99,6 +99,6 @@ class Block {
   // Gets the ENTIRE block contents and returns as a string.
   std::string getBlockContents() const;
 
-  // Gets ONLY _sData.
+  // Gets ONLY data_.
   std::string getBlockData() const;
 };

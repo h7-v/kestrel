@@ -47,6 +47,11 @@ class Blockchain {
   // REMOVE WHEN 100% SURE THAT TRANSACTIONDB WORKS!
   std::vector<Transaction> transactions_vector_;  // TODO(matt): Migrate from this vector to the leveldb transaction db.
 
+  // Used to track the number of transactions that have happened on the
+  // blockchain. This number allows us to properly index transactions in the
+  // database.
+  int tx_count_ = 0;
+
   // Vector used for storing basic wallet data locally. Wallet data is updated
   // before any transactions take place, and private keys are NEVER stored.
   // TODO(matt): Make sure that private keys exist in the program for the LEAST

@@ -47,7 +47,7 @@ void Blockchain::setChainBlockDBStatusFromAccess() {
 }
 
 void Blockchain::setChainTransactionDBStatusFromAccess() {
-    chain_transaction_db_status_ = transaction_db_access_->getTransactionDBStatus();
+    chain_transaction_db_status_ = transaction_db_access_->getTxDBStatus();
 }
 
 std::string Blockchain::getChainBlockDBStatus() const {
@@ -83,13 +83,13 @@ void Blockchain::createBlock() {
     }
 
     if (block_db_access_->getPreviousDBBlockIsMined()) {
-        // previousBlockIsMined = false;
         Block bNew = buffer_block_;
         buffer_block_.emptyBlockContents();
         transactions_vector_.clear();
 
 //        bNew.setIndex(chain_vector_.back().getIndex() + 1);
-        bNew.setIndex(std::stoi(block_db_access_->getLatestInBlockDBforUI().latest_key) + 1);
+        bNew.setIndex(std::stoi(block_db_access_->
+                                getLatestInBlockDBforUI().latest_key) + 1);
         bNew.setPrevHash(block_db_access_->getLatestBlockDBHash());
 
         bNew.mineBlock(difficulty_);
@@ -107,8 +107,10 @@ Transaction Blockchain::getLastTransaction() const {
 void Blockchain::executeTransaction(const std::string &from,
                                     const std::string &to,
                                     const float &amount) {
-    Transaction t = Transaction(from, to, amount);
+    tx_count_++;
+    Transaction t = Transaction(tx_count_, from, to, amount);
     transactions_vector_.push_back(t);
+    transaction_db_access_->putInTxDB(t);
 }
 
 void Blockchain::transactionsToBlockBuffer() {

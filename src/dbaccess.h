@@ -22,6 +22,7 @@
 #include <string>
 #include "src/block.h"
 #include "src/checkerthread.h"
+#include "src/transaction.h"
 
 // Struct with a member variable pair for returning two values from
 // the getLatestInBlockDB() method present in the BlockDBAccess class below.
@@ -112,7 +113,7 @@ class TransactionDBAccess {
 
   // Translation units can get access to leveldb::Status variables with this.
   // Necessary if we wish to print the status to the UI.
-  std::string transactiondb_status_;
+  std::string txdb_status_;
 
  public:
   // Works identically to the explicit BlockDBAccess constructor above.
@@ -122,7 +123,9 @@ class TransactionDBAccess {
   // each member function.
   ~TransactionDBAccess();
 
-  std::string getTransactionDBStatus() const;
+  std::string getTxDBStatus() const;
+
+  void putInTxDB(const Transaction &t) const;
 
   // TODO(matt): Fill this in when developing transactions
 };

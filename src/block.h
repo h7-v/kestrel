@@ -50,13 +50,13 @@ class Block {
     
   std::string getIndex() const;
 
-  // Takes a number, pads it with zeros using padIndexWithZeros(), then sets
-  // index_.
+  // Takes a number, pads it with zeros using padBlockIndexWithZeros(), then
+  // sets index_.
   void setIndex(uint32_t index);
 
   // Pads the start of the input integer with enough zeros to make the number
   // eight digits long.
-  std::string padIndexWithZeros(uint32_t index) const;
+  std::string padBlockIndexWithZeros(uint32_t index) const;
 
   // Set by Blockchain when Blockchain::createBlock() is called.
   void setPrevHash(std::string lastBlockHash);

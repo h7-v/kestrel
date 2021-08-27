@@ -18,6 +18,7 @@ void CheckerThread::run() {
     leveldb::Status blockdbStatus = leveldb::DB::Open(
                 blockdbOptions, cthread_block_db_file_path_, &blockdb);
 
+    if (!blockdbStatus.ok()) std::cerr << blockdbStatus.ToString() << std::endl;
     assert(blockdbStatus.ok());
 
     leveldb::Iterator *it = blockdb->NewIterator(leveldb::ReadOptions());

@@ -9,11 +9,10 @@ BlockDBAccess::BlockDBAccess(const std::string &dbpath)
     leveldb::Status blockdbStatus = leveldb::DB::Open(
                 blockdbOptions, block_database_file_path_, &blockdb);
 
+    if (!blockdbStatus.ok()) std::cerr << blockdbStatus.ToString() << std::endl;
     assert(blockdbStatus.ok());
 
-    if (!blockdbStatus.ok()) {
-        std::cerr << blockdbStatus.ToString() << std::endl;
-    } else if (blockdbStatus.ok()) {
+    if (blockdbStatus.ok()) {
         blockdb_status_ = (blockdbStatus.ToString());
     }
 
@@ -127,11 +126,10 @@ void BlockDBAccess::putInBlockDB(const Block &b) const {
     leveldb::Status blockdbStatus = leveldb::DB::Open(
                 blockdbOptions, block_database_file_path_, &blockdb);
 
+    if (!blockdbStatus.ok()) std::cerr << blockdbStatus.ToString() << std::endl;
     assert(blockdbStatus.ok());
 
-    if (!blockdbStatus.ok()) {
-        std::cerr << blockdbStatus.ToString() << std::endl;
-    } else if (blockdbStatus.ok()) {
+    if (blockdbStatus.ok()) {
         blockdb->Put(leveldb::WriteOptions(), b.getIndex(),
                      b.getBlockContents());
         assert(blockdbStatus.ok());
@@ -148,11 +146,10 @@ void BlockDBAccess::deleteFromBlockDB(const std::string &key) const {
     leveldb::Status blockdbStatus = leveldb::DB::Open(
                 blockdbOptions, block_database_file_path_, &blockdb);
 
+    if (!blockdbStatus.ok()) std::cerr << blockdbStatus.ToString() << std::endl;
     assert(blockdbStatus.ok());
 
-    if (!blockdbStatus.ok()) {
-        std::cerr << blockdbStatus.ToString() << std::endl;
-    } else if (blockdbStatus.ok()) {
+    if (blockdbStatus.ok()) {
         blockdb->Delete(leveldb::WriteOptions(), key);
         assert(blockdbStatus.ok());
     }
@@ -172,12 +169,11 @@ TransactionDBAccess::TransactionDBAccess(const std::string &dbpath)
                 transactiondbOptions, transaction_database_file_path_,
                 &transactiondb);
 
+    if (!transactiondbStatus.ok()) std::cerr << transactiondbStatus.ToString() << std::endl;
     assert(transactiondbStatus.ok());
 
-    if (!transactiondbStatus.ok()) {
-        std::cerr << transactiondbStatus.ToString() << std::endl;
-    } else if (transactiondbStatus.ok()) {
-        transactiondb_status_ = (transactiondbStatus.ToString());
+    if (transactiondbStatus.ok()) {
+        txdb_status_ = (transactiondbStatus.ToString());
     }
 
     delete transactiondb;
@@ -185,6 +181,27 @@ TransactionDBAccess::TransactionDBAccess(const std::string &dbpath)
 
 TransactionDBAccess::~TransactionDBAccess() {}
 
-std::string TransactionDBAccess::getTransactionDBStatus() const {
-    return transactiondb_status_;
+std::string TransactionDBAccess::getTxDBStatus() const {
+    return txdb_status_;
+}
+
+void TransactionDBAccess::putInTxDB(const Transaction &t) const {
+    leveldb::DB *transactiondb;
+    leveldb::Options transactiondbOptions;
+    transactiondbOptions.create_if_missing = false;
+
+    leveldb::Status transactiondbStatus = leveldb::DB::Open(
+                transactiondbOptions, transaction_database_file_path_,
+                &transactiondb);
+
+    if (!transactiondbStatus.ok()) std::cerr << transactiondbStatus.ToString() << std::endl;
+    assert(transactiondbStatus.ok());
+
+    if (transactiondbStatus.ok()) {
+        transactiondb->Put(leveldb::WriteOptions(), t.getTxIndex(),
+                     t.getTransactionData());
+        assert(transactiondbStatus.ok());
+    }
+
+    delete transactiondb;
 }

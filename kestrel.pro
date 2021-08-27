@@ -20,6 +20,7 @@ SOURCES += \
     src/dbaccess.cc \
     src/kestrel.cc \
     src/main.cc \
+    src/merkle.cc \
     src/minerthread.cc \
     src/tempblock.cc \
     src/transaction.cc \
@@ -32,6 +33,7 @@ HEADERS += \
     src/checkerthread.h \
     src/dbaccess.h \
     src/kestrel.h \
+    src/merkle.h \
     src/minerthread.h \
     src/tempblock.h \
     src/transaction.h \

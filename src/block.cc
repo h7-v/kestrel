@@ -22,7 +22,7 @@ inline std::string Block::calculateGenesis() const {
 }
 
 Block::Block(uint32_t nIndexIn, const std::string &sDataIn)
-    : index_(padIndexWithZeros(nIndexIn)), data_(sDataIn) {
+    : index_(padBlockIndexWithZeros(nIndexIn)), data_(sDataIn) {
     nonce_ = -1;
     prev_hash_ = "";
     hash_ = "";
@@ -34,10 +34,10 @@ std::string Block::getIndex() const {
 }
 
 void Block::setIndex(uint32_t index) {
-    index_ = padIndexWithZeros(index);
+    index_ = padBlockIndexWithZeros(index);
 }
 
-std::string Block::padIndexWithZeros(uint32_t index) const {
+std::string Block::padBlockIndexWithZeros(uint32_t index) const {
     std::stringstream ss;
     ss << std::internal << std::setfill('0') << std::setw(8) << index;
     return ss.str();
@@ -112,7 +112,7 @@ void Block::mineGenesis(u_int32_t nDifficulty) {
 void Block::fillBlockData(const std::vector<Transaction> &vDataIn) {
     std::stringstream ss;
     for (uint i = 0; i < vDataIn.size(); i++) {
-        ss << vDataIn[i].getTransactionData().str();
+        ss << vDataIn[i].getTransactionData();
     }
     data_ = ss.str();
 }

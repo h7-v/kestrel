@@ -68,7 +68,7 @@ void Kestrel::on_startButton_clicked() {
 void Kestrel::on_addTxButton_clicked() {
 //    bchain_->executeTransaction("fromMae", "toHuisi", 50);
     bchain_->executeTransaction("fromLola", "toSydney", 120);
-    bchain_->transactionsToBlockBuffer();
+//    bchain_->transactionsToBlockBuffer();
 
     ui->textBrowser->append(
                 QString::fromStdString(bchain_->getBlockDataOnly() + "\n"));

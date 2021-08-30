@@ -43,6 +43,10 @@ std::string Block::padBlockIndexWithZeros(uint32_t index) const {
     return ss.str();
 }
 
+void Block::setDataWithTxRange(const std::string start, const std::string end) {
+    data_ = start + " - " + end;
+}
+
 void Block::setPrevHash(std::string lastBlockHash) {
     prev_hash_ = lastBlockHash;
 }
@@ -53,6 +57,10 @@ std::string Block::getHash() {
 
 void Block::setTime(time_t time) {
     time_ = time;
+}
+
+void Block::setMerkleRoot(const std::string &root) {
+    merkle_root_ = root;
 }
 
 bool Block::getMinedStatus() const {
@@ -132,7 +140,8 @@ std::string Block::getBlockContents() const {
     ss << isMined
        << "Index: " << index_ << "\n"
        << "Nonce: " <<nonce_ << "\n"
-       << "Data Contents: " << data_ << "\n"
+       << "Transaction Range: " << data_ << "\n"
+       << "Merkle Root: " << merkle_root_ << "\n"
        << "Previous Block's Hash: " << prev_hash_ << "\n"
        << "HASH: " << hash_ << "\n"
        << "Time: " << buf;

@@ -12,6 +12,7 @@ class Block {
   std::string index_;  // Was uint32_t before padding was added.
   int64_t nonce_;
   std::string data_;
+  std::string merkle_root_;
   std::string prev_hash_;
 
   // Block hash variable set after mining is completed.
@@ -35,7 +36,7 @@ class Block {
   std::string calculateGenesis() const;
 
   // Used as an internal means to keep track of whether or not a block has been
-  // mined.
+  // mined. Must be char due to leveldb formatting.
   char isMined = '0';
 
   // Used by satisfyProofOfWork() and mineBlock() to check if the first x
@@ -58,6 +59,8 @@ class Block {
   // eight digits long.
   std::string padBlockIndexWithZeros(uint32_t index) const;
 
+  void setDataWithTxRange(const std::string start, const std::string end);
+
   // Set by Blockchain when Blockchain::createBlock() is called.
   void setPrevHash(std::string lastBlockHash);
 
@@ -66,6 +69,8 @@ class Block {
   // Used by Blockchain to mark blocks with the time at which they finished
   // being mined.
   void setTime(time_t time);
+
+  void setMerkleRoot(const std::string &root);
 
   bool getMinedStatus() const;
 

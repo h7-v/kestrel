@@ -1,4 +1,5 @@
 #include "src/blockchain.h"
+#include "src/merkle.h"
 #include <unistd.h>
 #include <assert.h>
 #include <string>
@@ -27,6 +28,7 @@ Blockchain::Blockchain(const std::string &blockdbFilepath,
     Block genesis = Block(0, "11337cc528618b86a8e918edadcd5f1c955790469704a1a3a8075799e610bc72");  // creator's name sha256
     difficulty_ = 5;
     genesis.setTime(1628806560);  // Fixed time for the Genesis block.
+    genesis.setMerkleRoot("TxMerkleRoot");
     genesis.mineGenesis(4);  // Easier mining conditions for Genesis so that Kestrel starts quickly.
     chain_vector_.emplace_back(genesis);
 
@@ -34,7 +36,8 @@ Blockchain::Blockchain(const std::string &blockdbFilepath,
 
     // Set tx count for this Blockchain object to match the latest index in the tx db.
     // There needs to be at least one transaction in the database already.
-    Transaction t = Transaction(0, "dev", "chain", 1);
+    tx_count_++;
+    Transaction t = Transaction(0, "dev", "chain", 0);
     transaction_db_access_->putInTxDB(t);
     tx_count_ = std::stoi(transaction_db_access_->getLatestInTxDB().latest_key);
 
@@ -92,8 +95,16 @@ void Blockchain::createBlock() {
 
     if (block_db_access_->getPreviousDBBlockIsMined()) {
         Block bNew = buffer_block_;
-        buffer_block_.emptyBlockContents();
+
+        // Get transactions vector range and then calculate the Merkle root.
+        std::string tx_vector_start = transactions_vector_[0].getTxIndex();
+        std::string tx_vector_end = transactions_vector_.back().getTxIndex();
+        bNew.setDataWithTxRange(tx_vector_start, tx_vector_end);
+        bNew.setMerkleRoot(calculateMerkleRoot(transactions_vector_));
+
         transactions_vector_.clear();
+
+        buffer_block_.emptyBlockContents();
 
 //        bNew.setIndex(chain_vector_.back().getIndex() + 1);
         bNew.setIndex(std::stoi(block_db_access_->
@@ -119,10 +130,12 @@ void Blockchain::executeTransaction(const std::string &from,
     Transaction t = Transaction(tx_count_, from, to, amount);
     transactions_vector_.push_back(t);
     transaction_db_access_->putInTxDB(t);
+
+    buffer_block_.fillBlockData(transactions_vector_);
 }
 
 void Blockchain::transactionsToBlockBuffer() {
-    buffer_block_.fillBlockData(transactions_vector_);
+
 }
 
 bool Blockchain::bufferBlockContainsData() const {
@@ -146,7 +159,7 @@ std::string Blockchain::getBlockDataOnly() const {  // used for debugging
 }
 
 void Blockchain::getLatestTXInVectorAndDB() const {  // used for debugging
-    std::cout << "VectorTX:" << transactions_vector_.end()->getTransactionData() << std::endl;
+    std::cout << "VectorTX:" << transactions_vector_.back().getTransactionData() << std::endl;
     std::cout << "TX DB: " << transaction_db_access_->getLatestInTxDB().latest_value << std::endl;
 }
 

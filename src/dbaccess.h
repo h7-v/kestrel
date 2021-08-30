@@ -123,6 +123,8 @@ class TransactionDBAccess {
   // Necessary if we wish to print the status to the UI.
   std::string txdb_status_;
 
+  std::string last_tx_id_;
+
  public:
   // Works identically to the explicit BlockDBAccess constructor above.
   explicit TransactionDBAccess(const std::string &dbpath);
@@ -133,9 +135,14 @@ class TransactionDBAccess {
 
   std::string getTxDBStatus() const;
 
-  void putInTxDB(const Transaction &t) const;
+  // Easy access to the Put() method in leveldb for use with Kestrel's block
+  // type.
+  void putInTxDB(const Transaction &t);
 
+  // Returns .latest_key and .latest_value
   LatestInTxDB getLatestInTxDB() const;
+
+  std::string getLastTxID() const;
 
   // TODO(matt): Fill this in when developing transactions
 };

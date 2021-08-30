@@ -185,7 +185,7 @@ std::string TransactionDBAccess::getTxDBStatus() const {
     return txdb_status_;
 }
 
-void TransactionDBAccess::putInTxDB(const Transaction &t) const {
+void TransactionDBAccess::putInTxDB(const Transaction &t) {
     leveldb::DB *transactiondb;
     leveldb::Options transactiondbOptions;
     transactiondbOptions.create_if_missing = false;
@@ -202,6 +202,8 @@ void TransactionDBAccess::putInTxDB(const Transaction &t) const {
                      t.getTransactionData());
         assert(transactiondbStatus.ok());
     }
+
+    last_tx_id_ = t.getTxIndex();
 
     delete transactiondb;
 }
@@ -229,4 +231,8 @@ LatestInTxDB TransactionDBAccess::getLatestInTxDB() const {
     delete transactiondb;
 
     return latestData;
+}
+
+std::string TransactionDBAccess::getLastTxID() const {
+    return last_tx_id_;
 }

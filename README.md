@@ -10,7 +10,8 @@ All source code is written using [Google's C++ Style Guide](https://google.githu
 * Uses [leveldb](https://github.com/google/leveldb) to store and access blocks on disk (Block data itself may be stored elsewhere eventually)
 * Maintains a local wallet balance based on previous transactions (Upcoming)
 * Uses private keys to send KES coins to other Kestrel wallets (Upcoming)
-* Handles transaction data with Merkle Trees (Upcoming)
+* Handles transaction data with Merkle Trees
+* Transaction authenticity checking (Upcoming)
 * Networking to interact with other nodes (Upcoming)
 * Consensus with other nodes on the network to establish which blocks should be added to the chain (Upcoming)
 * Cross Platform (Upcoming)

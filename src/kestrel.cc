@@ -104,27 +104,8 @@ void Kestrel::on_mineButton_toggled(bool checked) {
 
 
 void Kestrel::on_debugButton_clicked() {
+
     /*
-    std::string value;
-    leveldb::DB *blockdb;
-    leveldb::Options blockdbOptions;
-    blockdbOptions.create_if_missing = false;
-
-    leveldb::Status blockdbStatus = leveldb::DB::Open(
-                blockdbOptions, "/tmp/kestrelBLOCKDB", &blockdb);
-
-    assert(blockdbStatus.ok());
-
-    blockdb->Get(leveldb::ReadOptions(), "12", &value);
-    delete blockdb;
-
-    ui->textBrowser->append(
-                QString::fromStdString(value));
-    */
-
-
-
-
     std::string latest_key;
     std::string latest_value;
 
@@ -137,22 +118,16 @@ void Kestrel::on_debugButton_clicked() {
 
     assert(blockdbStatus.ok());
     leveldb::Iterator *it = blockdb->NewIterator(leveldb::ReadOptions());
-    /*
-    it->SeekToLast();
-    latest_key = it->key().ToString();
-    latest_value = it->value().ToString();
-    assert(it->status().ok());
-    delete it;
-    delete blockdb;
 
-    ui->textBrowser->append(
-                QString::fromStdString(latest_key + " " +llatest_value));
-    */
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
       ui->textBrowser->append(
                   QString::fromStdString(it->key().ToString() + ": "  + it->value().ToString()));
     }
     delete it;
     delete blockdb;
+    */
+
+//    bchain_->getLatestTXInVectorAndDB();
+    bchain_->getTxCount();
 
 }

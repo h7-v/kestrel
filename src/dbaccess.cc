@@ -205,3 +205,28 @@ void TransactionDBAccess::putInTxDB(const Transaction &t) const {
 
     delete transactiondb;
 }
+
+LatestInTxDB TransactionDBAccess::getLatestInTxDB() const {
+    LatestInTxDB latestData;
+
+    leveldb::DB *transactiondb;
+    leveldb::Options transactiondbOptions;
+    transactiondbOptions.create_if_missing = false;
+
+    leveldb::Status transactiondbStatus = leveldb::DB::Open(
+                transactiondbOptions, transaction_database_file_path_,
+                &transactiondb);
+
+    if (!transactiondbStatus.ok()) std::cerr << transactiondbStatus.ToString() << std::endl;
+    assert(transactiondbStatus.ok());
+
+    leveldb::Iterator *it = transactiondb->NewIterator(leveldb::ReadOptions());
+    it->SeekToLast();
+    latestData.latest_key = it->key().ToString();
+    latestData.latest_value = it->value().ToString();
+    assert(it->status().ok());
+    delete it;
+    delete transactiondb;
+
+    return latestData;
+}

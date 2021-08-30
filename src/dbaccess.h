@@ -103,6 +103,14 @@ class BlockDBAccess : public QObject {
 
 // ----------------------------------------------------------------------------
 
+// Struct with a member variable pair for returning two values from
+// the getLatestInTxDB() method present in the TransactionDBAccess class below.
+struct LatestInTxDB {
+ public:
+  std::string latest_key;
+  std::string latest_value;
+};
+
 // This class works similarly to the BlockDBAccess class above, but is for use
 // with Kestrel transactions.
 class TransactionDBAccess {
@@ -126,6 +134,8 @@ class TransactionDBAccess {
   std::string getTxDBStatus() const;
 
   void putInTxDB(const Transaction &t) const;
+
+  LatestInTxDB getLatestInTxDB() const;
 
   // TODO(matt): Fill this in when developing transactions
 };

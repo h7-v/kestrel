@@ -148,4 +148,6 @@ class Blockchain {
   // used for debugging to the console/text window
   std::string getTempBlockContents() const;
   std::string getBlockDataOnly() const;
+  void getLatestTXInVectorAndDB() const;
+  void getTxCount() const;
 };

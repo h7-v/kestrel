@@ -15,6 +15,7 @@ Blockchain::Blockchain(const std::string &blockdbFilepath,
     : blockdb_file_path_(blockdbFilepath),
       transactiondb_file_path_(transactiondbFilepath), buffer_block_(1, "") {
 
+    // Init databases.
     BlockDBAccess *bdba = new BlockDBAccess(blockdb_file_path_);
     block_db_access_ = bdba;
     TransactionDBAccess *txdba = new TransactionDBAccess(transactiondb_file_path_);
@@ -22,6 +23,7 @@ Blockchain::Blockchain(const std::string &blockdbFilepath,
     setChainBlockDBStatusFromAccess();
     setChainTransactionDBStatusFromAccess();
 
+    // Create Genesis Block at Index 0.
     Block genesis = Block(0, "11337cc528618b86a8e918edadcd5f1c955790469704a1a3a8075799e610bc72");  // creator's name sha256
     difficulty_ = 5;
     genesis.setTime(1628806560);  // Fixed time for the Genesis block.
@@ -29,6 +31,12 @@ Blockchain::Blockchain(const std::string &blockdbFilepath,
     chain_vector_.emplace_back(genesis);
 
     block_db_access_->putInBlockDB(genesis);
+
+    // Set tx count for this Blockchain object to match the latest index in the tx db.
+    // There needs to be at least one transaction in the database already.
+    Transaction t = Transaction(0, "dev", "chain", 1);
+    transaction_db_access_->putInTxDB(t);
+    tx_count_ = std::stoi(transaction_db_access_->getLatestInTxDB().latest_key);
 
     bchain_object_exists_ = true;
 }
@@ -135,4 +143,13 @@ std::string Blockchain::getTempBlockContents() const {  // used for debugging
 
 std::string Blockchain::getBlockDataOnly() const {  // used for debugging
     return buffer_block_.getBlockData();
+}
+
+void Blockchain::getLatestTXInVectorAndDB() const {  // used for debugging
+    std::cout << "VectorTX:" << transactions_vector_.end()->getTransactionData() << std::endl;
+    std::cout << "TX DB: " << transaction_db_access_->getLatestInTxDB().latest_value << std::endl;
+}
+
+void Blockchain::getTxCount() const {  // used for debugging
+    std::cout << tx_count_ << std::endl;
 }

@@ -7,6 +7,8 @@
 // #include <QFile>
 #include "leveldb/db.h"
 
+#include "src/wallet.h"
+
 Kestrel::Kestrel(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::Kestrel) {
     ui->setupUi(this);
@@ -105,29 +107,17 @@ void Kestrel::on_mineButton_toggled(bool checked) {
 
 void Kestrel::on_debugButton_clicked() {
 
-    /*
-    std::string latest_key;
-    std::string latest_value;
+//    std::string private_key_demo1 = "VJLQIX4HV1C69WDGSZOKNEJT8CA1FS9ZCHEZMREUPKPU5AI9MWW6BYONPKCY16WN";
+//    std::string private_key_demo2 = "4YK5QKXFND9BOW26OGDE1KIBRPWS1IXI4WSCOJD36SRIPREQUAHML7IQSQEI1BA2";
+//    std::string private_key_demo3 = "OG53919UVO4MPF653ZCFE8E9CE860TQQ2B7SW1LSW4IA9HF3LC8BZ0YS4OHMFCJ2";
+    Wallet wallet;
 
-    leveldb::DB *blockdb;
-    leveldb::Options blockdbOptions;
-    blockdbOptions.create_if_missing = false;
+//    for (int i = 100; i < 999; i++) {
+//        std::cout << i << ": " << wallet.computeWalletAddress(private_key_demo3) << std::endl;
+//    }
 
-    leveldb::Status blockdbStatus = leveldb::DB::Open(
-                blockdbOptions, "/tmp/kestrelBLOCKDB", &blockdb);
-
-    assert(blockdbStatus.ok());
-    leveldb::Iterator *it = blockdb->NewIterator(leveldb::ReadOptions());
-
-    for (it->SeekToFirst(); it->Valid(); it->Next()) {
-      ui->textBrowser->append(
-                  QString::fromStdString(it->key().ToString() + ": "  + it->value().ToString()));
-    }
-    delete it;
-    delete blockdb;
-    */
-
-//    bchain_->getLatestTXInVectorAndDB();
-    bchain_->getTxCount();
+    std::string demokey = wallet.generatePrivateKey();
+    std::cout << "Generated private key: " << demokey << std::endl;
+    std::cout << "Associated address: " << wallet.computeWalletAddress(demokey) << std::endl;
 
 }

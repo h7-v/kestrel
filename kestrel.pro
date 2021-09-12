@@ -52,6 +52,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     resources.qrc
 
+# leveldb library import.
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/ext/leveldb/1.23/lib/release/ -lleveldb
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/ext/leveldb/1.23/lib/debug/ -lleveldb
 else:unix: LIBS += -L$$PWD/ext/leveldb/1.23/lib/ -lleveldb
@@ -64,3 +65,31 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/ext/leveldb
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/ext/leveldb/1.23/lib/release/leveldb.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/ext/leveldb/1.23/lib/debug/leveldb.lib
 else:unix: PRE_TARGETDEPS += $$PWD/ext/leveldb/1.23/lib/libleveldb.a
+
+# openssl crypto library import.
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../Kestrel/ext/openssl/1.1.1l/lib/release/ -lcrypto
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../Kestrel/ext/openssl/1.1.1l/lib/debug/ -lcrypto
+else:unix: LIBS += -L$$PWD/../Kestrel/ext/openssl/1.1.1l/lib/ -lcrypto
+
+INCLUDEPATH += $$PWD/../Kestrel/ext/openssl/1.1.1l/include
+DEPENDPATH += $$PWD/../Kestrel/ext/openssl/1.1.1l/include
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../Kestrel/ext/openssl/1.1.1l/lib/release/libcrypto.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../Kestrel/ext/openssl/1.1.1l/lib/debug/libcrypto.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../Kestrel/ext/openssl/1.1.1l/lib/release/crypto.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../Kestrel/ext/openssl/1.1.1l/lib/debug/crypto.lib
+else:unix: PRE_TARGETDEPS += $$PWD/../Kestrel/ext/openssl/1.1.1l/lib/libcrypto.a
+
+# secp256k1 library import.
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../Kestrel/ext/secp256k1/release/ -lsecp256k1
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../Kestrel/ext/secp256k1/debug/ -lsecp256k1
+else:unix: LIBS += -L$$PWD/../Kestrel/ext/secp256k1/ -lsecp256k1
+
+INCLUDEPATH += $$PWD/../Kestrel/ext/secp256k1
+DEPENDPATH += $$PWD/../Kestrel/ext/secp256k1
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../Kestrel/ext/secp256k1/release/libsecp256k1.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../Kestrel/ext/secp256k1/debug/libsecp256k1.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../Kestrel/ext/secp256k1/release/secp256k1.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../Kestrel/ext/secp256k1/debug/secp256k1.lib
+else:unix: PRE_TARGETDEPS += $$PWD/../Kestrel/ext/secp256k1/libsecp256k1.a

@@ -1,0 +1,50 @@
+{
+  "homebrew_version": "3.2.9-37-g7d3f073",
+  "used_options": [
+
+  ],
+  "unused_options": [
+
+  ],
+  "built_as_bottle": true,
+  "poured_from_bottle": true,
+  "installed_as_dependency": false,
+  "installed_on_request": true,
+  "changed_files": [
+    "bin/c_rehash",
+    "CHANGES",
+    "lib/pkgconfig/libcrypto.pc",
+    "lib/pkgconfig/libssl.pc",
+    "lib/pkgconfig/openssl.pc",
+    "share/man/man1/ca.1ssl"
+  ],
+  "time": 1630617446,
+  "source_modified_time": 1629812327,
+  "compiler": "clang",
+  "aliases": [
+    "openssl"
+  ],
+  "runtime_dependencies": [
+
+  ],
+  "source": {
+    "spec": "stable",
+    "versions": {
+      "stable": "1.1.1l",
+      "head": null,
+      "version_scheme": 1
+    },
+    "path": "/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/openssl@1.1.rb",
+    "tap_git_head": "17efe979aefef17d53a4c17b1850f95e3eec017d",
+    "tap": "homebrew/core"
+  },
+  "arch": "x86_64",
+  "built_on": {
+    "os": "Macintosh",
+    "os_version": "macOS 11.3",
+    "cpu_family": "penryn",
+    "xcode": "12.5",
+    "clt": "12.5.0.0.1.1617976050",
+    "preferred_perl": "5.30"
+  }
+}

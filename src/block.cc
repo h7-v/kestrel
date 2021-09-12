@@ -26,7 +26,7 @@ Block::Block(uint32_t nIndexIn, const std::string &sDataIn)
     nonce_ = -1;
     prev_hash_ = "";
     hash_ = "";
-    time_ = time(nullptr);  // overwritten when tempblock is copied to new block
+    time_ = time(nullptr);  // Overwritten when tempblock is copied to new block
 }
 
 std::string Block::getIndex() const {

@@ -25,7 +25,7 @@ Blockchain::Blockchain(const std::string &blockdbFilepath,
     setChainTransactionDBStatusFromAccess();
 
     // Create Genesis Block at Index 0.
-    Block genesis = Block(0, "11337cc528618b86a8e918edadcd5f1c955790469704a1a3a8075799e610bc72");  // creator's name sha256
+    Block genesis = Block(0, "11337cc528618b86a8e918edadcd5f1c955790469704a1a3a8075799e610bc72");  // Creator's name SHA256.
     difficulty_ = 5;
     genesis.setTime(1628806560);  // Fixed time for the Genesis block.
     genesis.setMerkleRoot("TxMerkleRoot");

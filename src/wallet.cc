@@ -162,10 +162,17 @@ void Wallet::walletAddressFromHash(const unsigned char *public_key_bytes) {
     memmove(address, address + (ones-n), 34-(ones-n));
     address[34-(ones-n)] = '\0';
 
-    // Convert to string and store in the Wallet object.
+    // Convert to string.
     std::string result;
     for (size_t i = 0; i < sizeof(address); i++) {
         result += address[i];
+    }
+
+    // Our result can sometimes be one character too short, but never more than
+    // one character. If the result is too short, we simply copy the last
+    // legitimate character onto the end so that the expected length is met.
+    if (result[33] == '\0') {
+        result[33] = result[32];
     }
 
     wallet_address_ = result;

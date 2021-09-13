@@ -112,10 +112,6 @@ void Kestrel::on_debugButton_clicked() {
 //    std::string private_key_demo3 = "OG53919UVO4MPF653ZCFE8E9CE860TQQ2B7SW1LSW4IA9HF3LC8BZ0YS4OHMFCJ2";
     Wallet wallet;
 
-//    for (int i = 100; i < 999; i++) {
-//        std::cout << i << ": " << wallet.computeWalletAddress(private_key_demo3) << std::endl;
-//    }
-
     std::string demokey = wallet.generatePrivateKey();
     std::cout << "Generated private key: " << demokey << std::endl;
     std::cout << "Associated address: " << wallet.computeWalletAddress(demokey) << std::endl;

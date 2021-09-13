@@ -19,6 +19,9 @@ Kestrel::Kestrel(QWidget *parent)
 //    ui->logoLabel->setPixmap(logoPix.scaled(w,h,Qt::KeepAspectRatio));
 
 //    QFile file(":/files/logForTextWin.txt");
+
+    Wallet *w = new Wallet();
+    wallet_ = w;
 }
 
 Kestrel::~Kestrel() {
@@ -32,6 +35,11 @@ void Kestrel::closeEvent(QCloseEvent *event) {
         delete mthread_;
         bchain_->stopBlockchainMining();
     }
+
+    delete wallet_;
+    wallet_ = nullptr;
+    delete bchain_;
+    bchain_ = nullptr;
 
     event->accept();
 }
@@ -107,13 +115,16 @@ void Kestrel::on_mineButton_toggled(bool checked) {
 
 void Kestrel::on_debugButton_clicked() {
 
-//    std::string private_key_demo1 = "VJLQIX4HV1C69WDGSZOKNEJT8CA1FS9ZCHEZMREUPKPU5AI9MWW6BYONPKCY16WN";
-//    std::string private_key_demo2 = "4YK5QKXFND9BOW26OGDE1KIBRPWS1IXI4WSCOJD36SRIPREQUAHML7IQSQEI1BA2";
-//    std::string private_key_demo3 = "OG53919UVO4MPF653ZCFE8E9CE860TQQ2B7SW1LSW4IA9HF3LC8BZ0YS4OHMFCJ2";
-    Wallet wallet;
-
-    std::string demokey = wallet.generatePrivateKey();
-    std::cout << "Generated private key: " << demokey << std::endl;
-    std::cout << "Associated address: " << wallet.computeWalletAddress(demokey) << std::endl;
-
 }
+
+void Kestrel::on_generateKButton_clicked()
+{
+    std::string private_key = wallet_->generatePrivateKey();
+    ui->pkeyTextBrowser->setText(QString::fromStdString(private_key));
+
+    ui->adrTextBrowser->setText(QString::fromStdString(wallet_->
+                                       computeWalletAddress(private_key)));
+
+    private_key = "";
+}
+

@@ -38,7 +38,9 @@ class Kestrel : public QMainWindow {
 
   void on_debugButton_clicked();
 
- public slots:
+  void on_generateKButton_clicked();
+
+public slots:
   // Appends mined block data to the console text box in the UI when a block
   // has been mined. SIGNAL for this function is in minerthread.h -
   // mineFinished().
@@ -52,5 +54,9 @@ class Kestrel : public QMainWindow {
   // start. Using this pointer allows for access to the blockchain object in
   // all scopes in the translation unit.
   Blockchain *bchain_{nullptr};
+
+  // Pointer to the wallet object created in the Kestrel constructor allowing
+  // for object access in all scopes in the translation unit.
+  Wallet *wallet_{nullptr};
 };
 #endif  // KESTREL_H

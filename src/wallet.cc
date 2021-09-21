@@ -203,12 +203,22 @@ std::string Wallet::walletAddressFromHash(const std::string &pub_key_in) const {
 int Wallet::computePkeyAndWalletAddress(const std::string &private_key) {
     public_key_ = computePublicKey(private_key);
     wallet_address_ = walletAddressFromHash(public_key_);
-    if (public_key_ == "" || wallet_address_ == "") {
+    if (public_key_ == "" || wallet_address_ == "" ||
+            public_key_.length() != 64 || wallet_address_.length() != 38) {
+        public_key_ = "";
+        wallet_address_ = "";
         return 0;
     }
     return 1;
 }
 
 std::string Wallet::getWalletAddrFromPrivateKey(const std::string &private_key) const {
+    std::string pkey = computePublicKey(private_key);
+    std::string addr = walletAddressFromHash(pkey);
+    if (public_key_ == "" || wallet_address_ == "" ||
+            public_key_.length() != 64 || wallet_address_.length() != 38) {
+        return "ERROR: Key or address incorrect length after process.";
+    }
+
     return walletAddressFromHash(computePublicKey(private_key));
 }

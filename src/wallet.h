@@ -66,6 +66,9 @@ class Wallet {
   // accordingly. Returns 1 if successful and 0 if not.
   int computePkeyAndWalletAddress(const std::string &private_key);
 
+  // A simpler version of the function above. Takes a private key and returns
+  // the corresponding wallet address. Used for authentication when submitting
+  // a transaction.
   std::string getWalletAddrFromPrivateKey(const std::string &private_key) const;
 };
 #endif  // WALLET_H

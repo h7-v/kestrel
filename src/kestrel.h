@@ -23,7 +23,8 @@ class Kestrel : public QMainWindow {
 
   // Deletes the UI.
   ~Kestrel();
-
+  // Properly collects garbage before closing the application so that it
+  // terminates without crashing.
   void closeEvent(QCloseEvent *event);
 
   // Used to keep access to the MinerThread when toggling the Mine button.

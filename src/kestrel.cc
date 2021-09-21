@@ -74,11 +74,11 @@ void Kestrel::on_startButton_clicked() {
 
 void Kestrel::on_addTxButton_clicked() {
     if (ui->sndAdrCheckBox->isChecked() && ui->recipAdrCheckBox->isChecked()) {
-        //    bchain_->executeTransaction("fromMae", "toHuisi", 50);
 //            bchain_->executeTransaction("fromLola", "toSydney", 120);
-        //    bchain_->transactionsToBlockBuffer();
-        if (wallet_->getWalletAddrFromPrivateKey(ui->sndPkeyLineEdit->text().toStdString()) ==
-                                                 ui->sndAdrLineEdit->text().toStdString()) {
+        std::string result = wallet_->getWalletAddrFromPrivateKey(
+                    ui->sndPkeyLineEdit->text().toStdString());
+
+        if (result == ui->sndAdrLineEdit->text().toStdString()) {
             bchain_->executeTransaction(ui->sndAdrLineEdit->text().toStdString(),
                                         ui->recipAdrLineEdit->text().toStdString(),
                                         ui->amtToSendSpinBox->text().toInt());
@@ -88,13 +88,13 @@ void Kestrel::on_addTxButton_clicked() {
                         QString::fromStdString("Current Block Transactions: " +
                                                bchain_->getBlockDataOnly() +
                                                "\n"));
+        } else if (result == "ERROR: Key or address incorrect length after process.") {
+            ui->txStatusInfoLabel->setText("Error");
+            ui->textBrowser->append("Error: Authentication unsuccessful.");
         } else {
             ui->txStatusInfoLabel->setText("Error");
             ui->textBrowser->append("Error: Incorrect private key.");
         }
-
-
-
 
     } else {
         ui->txStatusInfoLabel->setText("Error");
@@ -149,6 +149,8 @@ void Kestrel::on_generateKButton_clicked()
         ui->adrTextBrowser->setText(QString::fromStdString(wallet_->
                                                            getWalletAddress()));
         ui->textBrowser->append("Wallet address generated!");
+    } else {
+        ui->textBrowser->append("ERROR: Public Key/Address generation unsuccessful.");
     }
     private_key = "";
 }

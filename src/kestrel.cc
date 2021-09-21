@@ -132,7 +132,10 @@ void Kestrel::on_mineButton_toggled(bool checked) {
 
 
 void Kestrel::on_debugButton_clicked() {
+    bchain_->executeTransaction("fromLola", "toSydney", 120);
 
+    ui->textBrowser->append(
+                    QString::fromStdString(bchain_->getBlockDataOnly() + "\n"));
 }
 
 void Kestrel::on_generateKButton_clicked()

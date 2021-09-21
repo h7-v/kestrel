@@ -40,6 +40,14 @@ class Kestrel : public QMainWindow {
 
   void on_generateKButton_clicked();
 
+  void on_sndAdrLineEdit_textEdited(const QString &arg1);
+
+  void on_recipAdrLineEdit_textEdited(const QString &arg1);
+
+  void on_sndAdrCheckBox_clicked(bool checked);
+
+  void on_recipAdrCheckBox_clicked(bool checked);
+
 public slots:
   // Appends mined block data to the console text box in the UI when a block
   // has been mined. SIGNAL for this function is in minerthread.h -

@@ -1,7 +1,7 @@
 #include "src/wallet.h"
 #include "openssl/rand.h"
 #include "openssl/err.h"
-#include "openssl/sha.h"  // Necessary over the lib in ext/ as we are processing bytes here.
+#include "openssl/sha.h"  // Necessary over the SHA256 lib in ext/ as we are processing bytes here.
 #include "openssl/ripemd.h"
 #include "ext/secp256k1/include/secp256k1.h"
 #include <stdint.h>
@@ -18,6 +18,14 @@ typedef unsigned char byte;
 
 Wallet::Wallet() {
     setBalance();
+}
+
+std::string Wallet::getPublicKey() const {
+    return public_key_;
+}
+
+std::string Wallet::getWalletAddress() const {
+    return wallet_address_;
 }
 
 void Wallet::setBalance() {
@@ -55,12 +63,13 @@ std::string Wallet::generatePrivateKey() {
 
     int rand_seed;
 
-    s.reserve(64);
+    s.reserve(32);
 
-    for (int i = 0; i < 64; ++i) {
+    for (int i = 0; i < 32; ++i) {
         rand_seed = getRandomSeed();
         if (rand_seed == 0) {
             std::cout << "Key generation failed. Seed returned zero." << std::endl;
+            return "ERROR: Key generation failed.";
         }
         srand(rand_seed);
         s += alphanum[rand() % (sizeof(alphanum) - 1)];
@@ -69,7 +78,7 @@ std::string Wallet::generatePrivateKey() {
     return s;
 }
 
-unsigned char* Wallet::computePublicKeyBytes(const std::string &private_key) {
+std::string Wallet::computePublicKey(const std::string &private_key) const {
     // Creating the context for creation and serialisation.
     static secp256k1_context *ctx = NULL;
     ctx = secp256k1_context_create(
@@ -84,7 +93,7 @@ unsigned char* Wallet::computePublicKeyBytes(const std::string &private_key) {
 
     // Creating the public key.
     secp256k1_pubkey pubkey;
-    if (secp256k1_ec_pubkey_create(ctx, &pubkey, seckey) == 0) {  // Context object, output address, input address.
+    if (!secp256k1_ec_pubkey_create(ctx, &pubkey, seckey)) {  // Context object, output address, input address.
         throw "Public key creation error.";
     }
     // We are finished with seckey. There is potential for a memory leak here
@@ -105,11 +114,24 @@ unsigned char* Wallet::computePublicKeyBytes(const std::string &private_key) {
         );
     // Context object, output address, output length, input address, flags.
 
-    return bytes;
+    // Convert the pubkey bytes to a readable public key.
+    byte s[64];
+    for (int i = 0; i < 64; i++) {
+        s[i] = bytes[i];
+    }
+    char out[64];
+    base58(s, 64, out, 64);
+
+    std::string public_key;
+    for (int i = 0; i < 64; i++) {
+        public_key += out[i];
+    }
+
+    return public_key;
 }
 
 // Base 58 conversion written by nickfarrow.com(?)
-char* Wallet::base58(unsigned char *s, int s_size, char *out, int out_size) {
+char* Wallet::base58(unsigned char *s, int s_size, char *out, int out_size) const {
         static const char *base_chars = "123456789"
                 "ABCDEFGHJKLMNPQRSTUVWXYZ"
                 "abcdefghijkmnopqrstuvwxyz";
@@ -132,12 +154,12 @@ char* Wallet::base58(unsigned char *s, int s_size, char *out, int out_size) {
         return out;
 }
 
-void Wallet::walletAddressFromHash(const unsigned char *public_key_bytes) {
+std::string Wallet::walletAddressFromHash(const std::string &pub_key_in) const {
     byte s[65];
     byte out_hash[5 + RIPEMD160_DIGEST_LENGTH];
 
     for (int i = 0; i < 65; i++) {
-        s[i] = public_key_bytes[i];
+        s[i] = pub_key_in[i];
     }
 
     out_hash[0] = 0;  // Version byte.
@@ -158,12 +180,12 @@ void Wallet::walletAddressFromHash(const unsigned char *public_key_bytes) {
     int n;
     for (n = 1; out_hash[n] == 0x00; n++);
 
-    // Remove k-n leading 1's from the address.
+    // Remove ones-n leading 1's from the address.
     memmove(address, address + (ones-n), 34-(ones-n));
     address[34-(ones-n)] = '\0';
 
-    // Convert to string.
-    std::string result;
+    // Convert to string and add the "addr" prefix to indicate an address.
+    std::string result = "addr";
     for (size_t i = 0; i < sizeof(address); i++) {
         result += address[i];
     }
@@ -171,14 +193,22 @@ void Wallet::walletAddressFromHash(const unsigned char *public_key_bytes) {
     // Our result can sometimes be one character too short, but never more than
     // one character. If the result is too short, we simply copy the last
     // legitimate character onto the end so that the expected length is met.
-    if (result[33] == '\0') {
-        result[33] = result[32];
+    if (result[37] == '\0') {
+        result[37] = result[36];
     }
 
-    wallet_address_ = result;
+    return result;
 }
 
-std::string Wallet::computeWalletAddress(const std::string &private_key) {
-    walletAddressFromHash(computePublicKeyBytes(private_key));  // Address is stored in the object.
-    return wallet_address_;
+int Wallet::computePkeyAndWalletAddress(const std::string &private_key) {
+    public_key_ = computePublicKey(private_key);
+    wallet_address_ = walletAddressFromHash(public_key_);
+    if (public_key_ == "" || wallet_address_ == "") {
+        return 0;
+    }
+    return 1;
+}
+
+std::string Wallet::getWalletAddrFromPrivateKey(const std::string &private_key) const {
+    return walletAddressFromHash(computePublicKey(private_key));
 }

@@ -34,6 +34,7 @@
 // with a 1.
 class Wallet {
  private:
+  std::string public_key_;
   std::string wallet_address_;
   float balance_;
 
@@ -42,16 +43,18 @@ class Wallet {
   int getRandomSeed() const;
 
   // Elliptic curve secp256k1 used to encrypt the private key.
-  unsigned char* computePublicKeyBytes(const std::string &private_Key);
+  std::string computePublicKey(const std::string &private_Key) const;
 
   // Converts input byte hash to Base 58.
-  char* base58(unsigned char *s, int s_size, char *out, int out_size);
+  char* base58(unsigned char *s, int s_size, char *out, int out_size) const;
 
   // Uses SHA256 and RIPEMD160 and generates a Base58 address.
-  void walletAddressFromHash(const unsigned char *public_key_bytes);
+  std::string walletAddressFromHash(const std::string &pub_key_in) const;
 
  public:
   Wallet();
+  std::string getPublicKey() const;
+  std::string getWalletAddress() const;
   void setBalance();
   float getBalance() const;
 
@@ -59,8 +62,10 @@ class Wallet {
   // in a Kestrel private key.
   std::string generatePrivateKey();
 
-  // Takes a Kestrel private key and returns the address associated with said
-  // key.
-  std::string computeWalletAddress(const std::string &private_key);
+  // Takes a Kestrel private key and sets public_key_ and wallet_address_
+  // accordingly. Returns 1 if successful and 0 if not.
+  int computePkeyAndWalletAddress(const std::string &private_key);
+
+  std::string getWalletAddrFromPrivateKey(const std::string &private_key) const;
 };
 #endif  // WALLET_H

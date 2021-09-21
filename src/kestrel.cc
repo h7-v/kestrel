@@ -13,10 +13,7 @@ Kestrel::Kestrel(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::Kestrel) {
     ui->setupUi(this);
 
-//    QPixmap logoPix(":/files/images/k-1k1k.png");
-//    int w = ui->logoLabel->width();
-//    int h = ui->logoLabel->height();
-//    ui->logoLabel->setPixmap(logoPix.scaled(w,h,Qt::KeepAspectRatio));
+    this->setFixedSize(QSize(1280, 1000));
 
 //    QFile file(":/files/logForTextWin.txt");
 
@@ -49,7 +46,7 @@ void Kestrel::on_startButton_clicked() {
     bchain_ = b;
 
     if (bchain_->getBChainObjectExists()) {
-        ui->textBrowser->append("Blockchain Created");
+        ui->textBrowser->append("Blockchain Process Created");
 
         ui->textBrowser->append(
                     "Block Database Status: " +
@@ -59,9 +56,9 @@ void Kestrel::on_startButton_clicked() {
                     "Transaction Database Status: " +
                     QString::fromStdString(bchain_->getChainTransactionDBStatus() + "\n"));
 
-        ui->textBrowser->append("Genesis Block: ");
-        ui->textBrowser->append(QString::fromStdString(
-                                    bchain_->getBlockDBContents("00000000")));
+//        ui->textBrowser->append("Genesis Block: ");
+//        ui->textBrowser->append(QString::fromStdString(
+//                                    bchain_->getBlockDBContents("00000000")));
 
         ui->textBrowser->append("LAST BLOCK ON LOCAL SYSTEM: ");
         ui->textBrowser->append(QString::fromStdString(
@@ -76,12 +73,33 @@ void Kestrel::on_startButton_clicked() {
 }
 
 void Kestrel::on_addTxButton_clicked() {
-//    bchain_->executeTransaction("fromMae", "toHuisi", 50);
-    bchain_->executeTransaction("fromLola", "toSydney", 120);
-//    bchain_->transactionsToBlockBuffer();
+    if (ui->sndAdrCheckBox->isChecked() && ui->recipAdrCheckBox->isChecked()) {
+        //    bchain_->executeTransaction("fromMae", "toHuisi", 50);
+//            bchain_->executeTransaction("fromLola", "toSydney", 120);
+        //    bchain_->transactionsToBlockBuffer();
+        if (wallet_->getWalletAddrFromPrivateKey(ui->sndPkeyLineEdit->text().toStdString()) ==
+                                                 ui->sndAdrLineEdit->text().toStdString()) {
+            bchain_->executeTransaction(ui->sndAdrLineEdit->text().toStdString(),
+                                        ui->recipAdrLineEdit->text().toStdString(),
+                                        ui->amtToSendSpinBox->text().toInt());
 
-    ui->textBrowser->append(
-                QString::fromStdString(bchain_->getBlockDataOnly() + "\n"));
+            ui->textBrowser->append("Transaction submitted successfully.");
+            ui->textBrowser->append(
+                        QString::fromStdString("Current Block Transactions: " +
+                                               bchain_->getBlockDataOnly() +
+                                               "\n"));
+        } else {
+            ui->txStatusInfoLabel->setText("Error");
+            ui->textBrowser->append("Error: Incorrect private key.");
+        }
+
+
+
+
+    } else {
+        ui->txStatusInfoLabel->setText("Error");
+        ui->textBrowser->append("Error: Confirm wallet addresses are correct.");
+    }
 }
 
 void Kestrel::onMineFinished() {
@@ -120,11 +138,53 @@ void Kestrel::on_debugButton_clicked() {
 void Kestrel::on_generateKButton_clicked()
 {
     std::string private_key = wallet_->generatePrivateKey();
-    ui->pkeyTextBrowser->setText(QString::fromStdString(private_key));
+    ui->prvKeyTextBrowser->setText(QString::fromStdString(private_key));
 
-    ui->adrTextBrowser->setText(QString::fromStdString(wallet_->
-                                       computeWalletAddress(private_key)));
+    if (wallet_->computePkeyAndWalletAddress(private_key) == 1) {
+        ui->pubKeyTextBrowser->setText(QString::fromStdString(wallet_->
+                                                              getPublicKey()));
 
+        ui->textBrowser->append("Key pair generated!");
+
+        ui->adrTextBrowser->setText(QString::fromStdString(wallet_->
+                                                           getWalletAddress()));
+        ui->textBrowser->append("Wallet address generated!");
+    }
     private_key = "";
 }
 
+
+void Kestrel::on_sndAdrLineEdit_textEdited(const QString &arg1)
+{
+    ui->typedSndAdrLabel->setText(arg1);
+    if (ui->sndAdrLineEdit->text() == "") {
+        ui->typedSndAdrLabel->setText("------------------------------------------------------");
+    }
+}
+
+
+void Kestrel::on_recipAdrLineEdit_textEdited(const QString &arg1)
+{
+    ui->typedRecipAdrLabel->setText(arg1);
+    if (ui->recipAdrLineEdit->text() == "") {
+        ui->typedRecipAdrLabel->setText("------------------------------------------------------");
+    }
+}
+
+void Kestrel::on_sndAdrCheckBox_clicked(bool checked)
+{
+    if (checked == 0) {
+        ui->sndAdrLineEdit->setEnabled(true);
+    } else if (checked == 1) {
+        ui->sndAdrLineEdit->setEnabled(false);
+    }
+}
+
+void Kestrel::on_recipAdrCheckBox_clicked(bool checked)
+{
+    if (checked == 0) {
+        ui->recipAdrLineEdit->setEnabled(true);
+    } else if (checked == 1) {
+        ui->recipAdrLineEdit->setEnabled(false);
+    }
+}

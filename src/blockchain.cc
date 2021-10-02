@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <assert.h>
 #include <string>
+#include <sstream>
+#include <iomanip>
 #include "leveldb/db.h"
 
 // Returns the latest Block object in chain_vector_.
@@ -83,6 +85,47 @@ bool Blockchain::getIsMining() const {
     } else {
         return false;
     }
+}
+
+int Blockchain::updateBChainWithLatestTx() {
+    int txdb_latest = std::stoi(transaction_db_access_->
+                                getLatestInTxDB().latest_key);
+    int blockdb_latest = block_db_access_->
+            getTxRangeFromLatestBlock().tx_range_end;
+
+    if (txdb_latest > blockdb_latest) {
+        Block bNew = buffer_block_;
+
+        blockdb_latest = blockdb_latest + 1;  // We don't want to include the latest tx in the already mined block.
+        // Pad the index values with zeros to be used in the block tx range and database iterator.
+        std::stringstream tx_ss;
+        tx_ss << std::internal << std::setfill('0') << std::setw(9) << std::to_string(txdb_latest);
+        std::string ss_txdb_latest = tx_ss.str();
+        std::stringstream blk_ss;
+        blk_ss << std::internal << std::setfill('0') << std::setw(9) << std::to_string(blockdb_latest);
+        std::string ss_blockdb_latest = blk_ss.str();
+
+        transactions_vector_ = transaction_db_access_->getTxVectorOfTxDBRange(
+                    ss_blockdb_latest, ss_txdb_latest);
+
+        bNew.setDataWithTxRange(ss_blockdb_latest, ss_txdb_latest);
+        bNew.setMerkleRoot(calculateMerkleRoot(transactions_vector_));
+
+        transactions_vector_.clear();
+
+        bNew.setIndex(std::stoi(block_db_access_->
+                                getLatestInBlockDBforUI().latest_key) + 1);
+        bNew.setPrevHash(block_db_access_->getLatestBlockDBHash());
+
+        bNew.mineBlock(difficulty_);
+        bNew.setTime(time(nullptr));  // Time at completion of mining.
+        chain_vector_.emplace_back(bNew);
+
+        block_db_access_->putInBlockDB(bNew);
+
+        return 1;
+    }
+    return 0;
 }
 
 void Blockchain::createBlock() {

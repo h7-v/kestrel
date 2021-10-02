@@ -9,6 +9,13 @@ Transaction::Transaction(uint32_t index, std::string fromHash, std::string toHas
     time_of_transaction_ = time(nullptr);
 }
 
+Transaction::Transaction(std::string raw_data)
+    : raw_tx_data_(raw_data) {
+    for (int i = 2; i < 11; i++) {
+        tx_index_ += raw_data[i];
+    }
+}
+
 std::string Transaction::getTxIndex() const {
     return tx_index_;
 }
@@ -27,4 +34,8 @@ std::string Transaction::padTxIndexWithZeros(uint32_t index) const {
     std::stringstream ss;
     ss << std::internal << std::setfill('0') << std::setw(9) << index;
     return ss.str();
+}
+
+std::string Transaction::getRawTxData() const {
+    return raw_tx_data_;
 }

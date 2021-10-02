@@ -1,6 +1,7 @@
 #include "src/kestrel.h"
 #include "ui_kestrel.h"
 #include "src/dbaccess.h"
+#include <unistd.h>
 #include <string>
 #include <iomanip>
 // #include <QPixmap>
@@ -64,6 +65,13 @@ void Kestrel::on_startButton_clicked() {
         ui->textBrowser->append(QString::fromStdString(
                                     bchain_->getBlockDBContents()));
 
+        // TODO(matt): Check what the latest transactions are and catch up.
+        if (bchain_->updateBChainWithLatestTx()) {
+            ui->textBrowser->append("LAST BLOCK ON LOCAL SYSTEM WITH UPDATED TRANSACTIONS: ");
+            ui->textBrowser->append(QString::fromStdString(
+                                        bchain_->getBlockDBContents()));
+        }
+
         ui->startButton->setEnabled(false);
         ui->addTxButton->setEnabled(true);
         ui->mineButton->setEnabled(true);
@@ -88,6 +96,7 @@ void Kestrel::on_addTxButton_clicked() {
                         QString::fromStdString("Current Block Transactions: " +
                                                bchain_->getBlockDataOnly() +
                                                "\n"));
+            ui->txStatusInfoLabel->setText("Transaction Submitted");
         } else if (result == "ERROR: Key or address incorrect length after process.") {
             ui->txStatusInfoLabel->setText("Error");
             ui->textBrowser->append("Error: Authentication unsuccessful.");
@@ -100,6 +109,9 @@ void Kestrel::on_addTxButton_clicked() {
         ui->txStatusInfoLabel->setText("Error");
         ui->textBrowser->append("Error: Confirm wallet addresses are correct.");
     }
+    // Protection against accidentally executing more than one transaction.
+    ui->sndAdrCheckBox->setChecked(false);
+    ui->recipAdrCheckBox->setChecked(false);
 }
 
 void Kestrel::onMineFinished() {

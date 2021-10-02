@@ -113,6 +113,12 @@ class Blockchain {
   // Used by MinerThread class. See is_mining_ member variable above.
   bool getIsMining() const;
 
+  // Used to check for any transactions in the tx database that have not yet
+  // been added to a block locally, adds these transactions and then mines
+  // the block. TODO(matt): This process needs to be changed when networking
+  // is added. Returns 1 if an update was necessary, 0 if not.
+  int updateBChainWithLatestTx();
+
  public:
   // Waits for the previous block to finish mining, copies the contents of the
   // buffer block to a new block, clears the buffer block and transactions

@@ -97,6 +97,52 @@ std::string BlockDBAccess::getLatestBlockDBHash() const {
     return hash;
 }
 
+TxRangeFromBlockDB BlockDBAccess::getTxRangeFromLatestBlock() const {
+    TxRangeFromBlockDB range;
+    std::string latest_block_value = getLatestInBlockDBforUI().latest_value;
+    std::string tx_range_string = "Transaction Range: ";
+
+    // Getting range start value
+    int s_starting_char = 19;
+    int s_finishing_char = 0;
+    char start[10];  // Length of number when padded with zeros.
+
+    size_t s_found = latest_block_value.find(tx_range_string);
+    if (s_found != std::string::npos) {
+        s_starting_char += s_found;
+    }
+
+    s_finishing_char = s_starting_char + 9;
+
+    for (int i = 0; s_starting_char < s_finishing_char; i++, s_starting_char++) {
+        start[i] = latest_block_value[s_starting_char];
+    }
+    start[9] = '\0';
+
+    range.tx_range_start = std::stoi(start);
+
+    // Getting range end value
+    int e_starting_char = 31;
+    int e_finishing_char = 0;  // Declaring a finishing char twice for readability.
+    char end[10];  // Length of number when padded with zeros.
+
+    size_t e_found = latest_block_value.find(tx_range_string);
+    if (e_found != std::string::npos) {
+        e_starting_char += e_found;
+    }
+
+    e_finishing_char = e_starting_char + 9;
+
+    for (int i = 0; e_starting_char < e_finishing_char; i++, e_starting_char++) {
+        end[i] = latest_block_value[e_starting_char];
+    }
+    end[9] = '\0';
+
+    range.tx_range_end = std::stoi(end);
+
+    return range;
+}
+
 void BlockDBAccess::onPreviousBlockInMinedState() {
     previousDBBlockIsMined = true;
 }
@@ -235,4 +281,40 @@ LatestInTxDB TransactionDBAccess::getLatestInTxDB() const {
 
 std::string TransactionDBAccess::getLastTxID() const {
     return last_tx_id_;
+}
+
+std::vector<Transaction> TransactionDBAccess::getTxVectorOfTxDBRange(
+        std::string start, std::string limit) const {
+    std::vector<Transaction> tx_vector;
+
+
+    leveldb::DB *transactiondb;
+    leveldb::Options transactiondbOptions;
+    transactiondbOptions.create_if_missing = false;
+
+    leveldb::Status transactiondbStatus = leveldb::DB::Open(
+                transactiondbOptions, transaction_database_file_path_,
+                &transactiondb);
+
+    if (!transactiondbStatus.ok()) std::cerr << transactiondbStatus.ToString() << std::endl;
+    assert(transactiondbStatus.ok());
+
+    leveldb::Iterator *it = transactiondb->NewIterator(leveldb::ReadOptions());
+    for (it->Seek(start); it->Valid() && it->key().ToString() < limit;
+         it->Next()) {
+        Transaction tx = Transaction(it->value().ToString());
+        tx_vector.emplace_back(tx);
+        assert(it->status().ok());
+    }
+
+    // The above iterator does not catch the last key/value stored in the source.
+    it->SeekToLast();
+    Transaction tx = Transaction(it->value().ToString());
+    tx_vector.emplace_back(tx);
+    assert(it->status().ok());
+
+    delete it;
+    delete transactiondb;
+
+    return tx_vector;
 }

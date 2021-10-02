@@ -13,6 +13,7 @@ All source code is written using [Google's C++ Style Guide](https://google.githu
 * Uses private keys to send KES coins to other Kestrel wallets (Upcoming)
 * Handles transaction data with Merkle Trees
 * Transaction authenticity checking (Upcoming)
+* Finds transactions not yet in a block on startup and adds them to a new block
 * Networking to interact with other nodes (Upcoming)
 * Consensus with other nodes on the network to establish which blocks should be added to the chain (Upcoming)
 * Cross Platform (Upcoming)

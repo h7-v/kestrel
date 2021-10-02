@@ -32,6 +32,13 @@ struct LatestInBlockDB {
   std::string latest_value;
 };
 
+// Struct used to return two values from getTxRangeFromLatestBlock().
+struct TxRangeFromBlockDB {
+ public:
+  int tx_range_start;
+  int tx_range_end;
+};
+
 // This class handles leveldb database access and modification for Kestrel
 // blocks. Code becomes messy in other translation units without this class
 // because of the number of lines required for database access.
@@ -76,6 +83,8 @@ class BlockDBAccess : public QObject {
   // Finds "HASH: " within the latest database entry's value and returns the
   // 64 character SHA-256 hash that follows.
   std::string getLatestBlockDBHash() const;
+
+  TxRangeFromBlockDB getTxRangeFromLatestBlock() const;
 
   CheckerThread *cthread_{nullptr};
 
@@ -143,6 +152,14 @@ class TransactionDBAccess {
   LatestInTxDB getLatestInTxDB() const;
 
   std::string getLastTxID() const;
+
+  // Used by Blockchain object's updateBChainWithLatestTx() function to create
+  // a vector of unmined transactions. The vector is meant for use with a
+  // starting key, up to the ending key in the source. The limit will be
+  // returned in the second to last position of the vector, then the last key
+  // of the source will be returned in the last position of the vector.
+  std::vector<Transaction> getTxVectorOfTxDBRange(
+          std::string start, std::string limit) const;
 
   // TODO(matt): Fill this in when developing transactions
 };

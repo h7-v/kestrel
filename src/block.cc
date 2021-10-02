@@ -113,8 +113,6 @@ void Block::mineGenesis(u_int32_t nDifficulty) {
     if (hash_.substr(0, nDifficulty) == str) {
         isMined = '1';
     }
-
-//    std::cout << "Block mined: " << hash_ << "\n";
 }
 
 void Block::fillBlockData(const std::vector<Transaction> &vDataIn) {
